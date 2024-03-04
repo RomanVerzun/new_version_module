@@ -11,7 +11,6 @@ class Window(QWidget):
     def __init__(self):
         super().__init__()
 
-
         self.menu()
         self.module = MODULE(self.upper_board.currentText(), 'inputs')
 
@@ -24,7 +23,6 @@ class Window(QWidget):
     def replacement(self):
         print("Replacement")
         ...
-
 
     def main(self):
         self.main_layout = QVBoxLayout()
@@ -97,7 +95,6 @@ class Window(QWidget):
         self.monitor.addLayout(self.main_layout)
 
         self.setLayout(self.monitor)
-
 
 
 if __name__ == "__main__":
