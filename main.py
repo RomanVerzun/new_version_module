@@ -4,6 +4,10 @@ from PyQt6.QtWidgets import *
 from PyQt6.QtCore    import *
 from PyQt6.QtGui     import *
 
+from lineIterator import *
+from inputs import *
+from outputs import *
+from processor import *
 from module import *
 
 
@@ -18,17 +22,12 @@ class Window(QWidget):
 
         self.initUI()
 
-        self.upper_board.currentTextChanged.connect(self.replacement)
-
-    def replacement(self):
-        print("Replacement")
-        ...
-
     def main(self):
         self.main_layout = QVBoxLayout()
 
         row1 = QHBoxLayout()
         for button in self.module.iterate_upper_line1():
+            print(row1)
             row1.addWidget(button)
 
         row2 = QHBoxLayout()
