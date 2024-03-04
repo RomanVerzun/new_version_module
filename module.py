@@ -40,7 +40,6 @@ class MODULE:
     def iterate_down_Out2(self):
         return self.down_boardOut.iter_line2()
     
-
     def iterate_processor_B(self):
         return self.processor.iter_lineB()
     

@@ -17,13 +17,20 @@ class INPUTS:
         for i in range(1, 11):
             self.buttons_line1.append(QPushButton(f'I{self.ch1}{i:02}'))
             self.buttons_line1[i-1].setEnabled(False)
-            self.buttons_line1[i-1].setStyleSheet('color: black; background-color: green')
+            if i != 1 and i != 10:
+                self.buttons_line1[i-1].setStyleSheet('color: black; background-color: green')
+            else:
+                self.buttons_line1[i-1].setStyleSheet('color: black; background-color: yellow')
+
         
         # Добавляем кнопки для ch2
         for i in range(1, 11):
             self.buttons_line2.append(QPushButton(f'I{self.ch2}{i:02}'))
             self.buttons_line2[i-1].setEnabled(False)
-            self.buttons_line2[i-1].setStyleSheet('color: black; background-color: green')
+            if i != 1 and i != 10:
+                self.buttons_line2[i-1].setStyleSheet('color: black; background-color: green')
+            else:
+                self.buttons_line2[i-1].setStyleSheet('color: black; background-color: yellow')
 
     def iter_line1(self):
         return LineIterator(self.buttons_line1)

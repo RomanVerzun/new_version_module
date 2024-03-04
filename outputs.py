@@ -16,12 +16,21 @@ class OUTPUTS:
         # Добавляем кнопки для ch1
         for i in range(1, 11):
             self.buttons_line1.append(QPushButton(f'R{self.ch1}{i:02}'))
-            self.buttons_line1[i-1].setStyleSheet('color: black; background-color: #6666FF')
+            if i != 1 and i != 10:
+                self.buttons_line1[i-1].setStyleSheet('color: black; background-color: #6666FF')
+            else:
+                self.buttons_line1[i-1].setStyleSheet('color: black; background-color: yellow')
+                self.buttons_line1[i-1].setEnabled(False)
+
         
         # Добавляем кнопки для ch2
         for i in range(1, 11):
             self.buttons_line2.append(QPushButton(f'R{self.ch2}{i:02}'))
-            self.buttons_line2[i-1].setStyleSheet('color: black; background-color: #6666FF')
+            if i != 1 and i != 10:
+                self.buttons_line2[i-1].setStyleSheet('color: black; background-color: #6666FF')
+            else:
+                self.buttons_line2[i-1].setStyleSheet('color: black; background-color: yellow')
+                self.buttons_line2[i-1].setEnabled(False)
     
     def iter_line1(self):
         return LineIterator(self.buttons_line1)

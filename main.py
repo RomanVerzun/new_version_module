@@ -78,10 +78,12 @@ class Window(QWidget):
 
         row3 = QHBoxLayout()
         for button in self.module.iterate_down_Out1():
+            button.hide()
             row3.addWidget(button)
 
         row4 = QHBoxLayout()
         for button in self.module.iterate_down_Out2():
+            button.hide()
             row4.addWidget(button)
 
         row7 = QHBoxLayout()
@@ -94,11 +96,13 @@ class Window(QWidget):
 
         row9 = QHBoxLayout()
         for button in self.module.iterate_upper_Out1():
+            button.hide()
             row9.addWidget(button)
 
         row10 = QHBoxLayout()
         for button in self.module.iterate_upper_Out2():
             row10.addWidget(button)
+            button.hide()
 
         # Процессорная плата B
         row5 = QHBoxLayout()
