@@ -1,26 +1,26 @@
-from PyQt5.QtWidgets import QApplication, QWidget, QVBoxLayout, QPushButton
+from collections import UserDict
 
-def replace_button():
-    # Удалить старую кнопку
-    layout.removeWidget(button)
-    button.deleteLater()
-    
-    # Создать и добавить новую кнопку
-    new_button = QPushButton('Новая кнопка')
-    layout.addWidget(new_button)
-    new_button.clicked.connect(lambda: print("Новая кнопка нажата"))
+class CaseInsensitiveDict(UserDict):
+    def __init__(self, *args, **kwargs):
+        super().__init__()  # Инициализируем базовый класс без аргументов сначала
+        # Преобразуем все переданные ключи в нижний регистр
+        for key, value in dict(*args, **kwargs).items():
+            self.data[key.lower()] = value
 
-app = QApplication([])
+    def __getitem__(self, key):
+        return super().__getitem__(key.lower())
 
-window = QWidget()
-layout = QVBoxLayout()
+    def __setitem__(self, key, value):
+        super().__setitem__(key.lower(), value)
 
-button = QPushButton('Старая кнопка')
-button.clicked.connect(replace_button)
+    def __delitem__(self, key):
+        super().__delitem__(key.lower())
 
-layout.addWidget(button)
-window.setLayout(layout)
+    def __contains__(self, key):
+        return super().__contains__(key.lower())
 
-window.show()
-
-app.exec_()
+my_dict = CaseInsensitiveDict({'Name': 'John', 'Age': 30})
+print(my_dict['name'])
+print(my_dict['age'])
+my_dict['Gender'] = 'Male'
+print(my_dict['GENDER'])
