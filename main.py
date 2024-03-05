@@ -13,9 +13,7 @@ class Window(QWidget):
 
         self.menu()
         self.module = MODULE()
-
         self.main()
-
         self.initUI()
 
         self.upper_board.currentTextChanged.connect(self.replacement_upper)
@@ -23,107 +21,73 @@ class Window(QWidget):
 
     def replacement_upper(self, str):
         if str == 'outputs':
-            for button in self.module.iterate_upper_Inp1():
-                button.hide()
-            for button in self.module.iterate_upper_Inp2():
-                button.hide()
-
-            for button in self.module.iterate_upper_Out1():
-                button.show()
-            for button in self.module.iterate_upper_Out2():
-                button.show()
+            self.module.upOut()
         elif str == 'inputs':
-            for button in self.module.iterate_upper_Inp1():
-                button.show()
-            for button in self.module.iterate_upper_Inp2():
-                button.show()
-
-            for button in self.module.iterate_upper_Out1():
-                button.hide()
-            for button in self.module.iterate_upper_Out2():
-                button.hide()
+            self.module.upInp()
 
     def replacement_down(self, str):
         if str == 'outputs':
-            for button in self.module.iterate_down_Inp1():
-                button.hide()
-            for button in self.module.iterate_down_Inp2():
-                button.hide()
-
-            for button in self.module.iterate_down_Out1():
-                button.show()
-            for button in self.module.iterate_down_Out2():
-                button.show()
+            self.module.downOut()
         elif str == 'inputs':
-            for button in self.module.iterate_down_Inp1():
-                button.show()
-            for button in self.module.iterate_down_Inp2():
-                button.show()
-
-            for button in self.module.iterate_down_Out1():
-                button.hide()
-            for button in self.module.iterate_down_Out2():
-                button.hide()
+            self.module.downInp()
 
     def main(self):
         self.main_layout = QVBoxLayout()
 
-        row1 = QHBoxLayout()
-        for button in self.module.iterate_down_Inp1():
-            row1.addWidget(button)
+        inputC = QHBoxLayout()
+        for button in self.module.iterate_dInp1():
+            inputC.addWidget(button)
 
-        row2 = QHBoxLayout()
-        for button in self.module.iterate_down_Inp2():
-            row2.addWidget(button)
+        inputD = QHBoxLayout()
+        for button in self.module.iterate_dInp2():
+            inputD.addWidget(button)
 
-        row3 = QHBoxLayout()
-        for button in self.module.iterate_down_Out1():
+        relayC = QHBoxLayout()
+        for button in self.module.iterate_dOut1():
             button.hide()
-            row3.addWidget(button)
+            relayC.addWidget(button)
 
-        row4 = QHBoxLayout()
-        for button in self.module.iterate_down_Out2():
+        relayD = QHBoxLayout()
+        for button in self.module.iterate_dOut2():
             button.hide()
-            row4.addWidget(button)
+            relayD.addWidget(button)
 
-        row7 = QHBoxLayout()
-        for button in self.module.iterate_upper_Inp1():
-            row7.addWidget(button)
+        inputA = QHBoxLayout()
+        for button in self.module.iterate_uInp1():
+            inputA.addWidget(button)
 
-        row8 = QHBoxLayout()
-        for button in self.module.iterate_upper_Inp2():
-            row8.addWidget(button)
+        inputF = QHBoxLayout()
+        for button in self.module.iterate_uInp2():
+            inputF.addWidget(button)
 
-        row9 = QHBoxLayout()
-        for button in self.module.iterate_upper_Out1():
+        relayA = QHBoxLayout()
+        for button in self.module.iterate_uOut1():
             button.hide()
-            row9.addWidget(button)
+            relayA.addWidget(button)
 
-        row10 = QHBoxLayout()
-        for button in self.module.iterate_upper_Out2():
-            row10.addWidget(button)
+        relayF = QHBoxLayout()
+        for button in self.module.iterate_uOut2():
+            relayF.addWidget(button)
             button.hide()
 
-        # Процессорная плата B
-        row5 = QHBoxLayout()
+        inputB = QHBoxLayout()
         for button in self.module.iterate_processor_B():
-            row5.addWidget(button)
+            inputB.addWidget(button)
 
-        # Процессорная плата E
-        row6 = QHBoxLayout()
+        inputE = QHBoxLayout()
         for button in self.module.iterate_processor_E():
-            row6.addWidget(button)
+            inputE.addWidget(button)
 
-        self.main_layout.addLayout(row8)  # Input F 
-        self.main_layout.addLayout(row10) # Relay F
-        self.main_layout.addLayout(row6)  # Input E процессор
-        self.main_layout.addLayout(row2)  # Input D
-        self.main_layout.addLayout(row4)  # Relay D
-        self.main_layout.addLayout(row1)  # Input C
-        self.main_layout.addLayout(row3)  # Relay C
-        self.main_layout.addLayout(row5)  # Input B процессор
-        self.main_layout.addLayout(row7)  # Input A
-        self.main_layout.addLayout(row9)  # Relay A
+        self.main_layout.addLayout(inputF) 
+        self.main_layout.addLayout(relayF) 
+        self.main_layout.addLayout(inputE)  
+        self.main_layout.addLayout(inputD)  
+        self.main_layout.addLayout(relayD)  
+        self.main_layout.addLayout(inputC)  
+        self.main_layout.addLayout(relayC)  
+        self.main_layout.addLayout(inputB)  
+        self.main_layout.addLayout(inputA)  
+        self.main_layout.addLayout(relayA)  
 
     def menu(self):
         self.upper_board_lb  = QLabel('Верхняя плата')

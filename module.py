@@ -6,37 +6,69 @@ from board_io import PROCESSOR, INPUTS, OUTPUTS
     
 
 class MODULE:
-    def __init__(self, t1='inputs', t2='inputs'):
-        self.processor = PROCESSOR()
+    def __init__(self):
+        # upper board input
+        self.uBoardInp = INPUTS('A', 'F')
+        self.uBoardOut = OUTPUTS('A', 'F')
 
-        self.upper_boardInp = INPUTS('A', 'F')
-        self.upper_boardOut = OUTPUTS('A', 'F')
-        self.down_boardInp  = INPUTS('C', 'D')
-        self.down_boardOut  = OUTPUTS('C', 'D')
+        # down board input
+        self.dBoardInp = INPUTS('C', 'D')
+        self.dBoardOut = OUTPUTS('C', 'D')
+
+        # processor
+        self.processor = PROCESSOR()
     
-    def iterate_upper_Inp1(self):
-        return self.upper_boardInp.iter_terminals1()
+    def upInp(self):
+        """Show upper board input"""
+        for btn in self.uBoardInp.get_terminals():
+            btn.show()
+        for btn in self.uBoardOut.get_terminals():
+            btn.hide()
+
+    def upOut(self):
+        """Show upper board output"""
+        for btn in self.uBoardInp.get_terminals():
+            btn.hide()
+        for btn in self.uBoardOut.get_terminals():
+            btn.show()
+
+    def downInp(self):
+        """Show down board input"""
+        for btn in self.dBoardInp.get_terminals():
+            btn.show()
+        for btn in self.dBoardOut.get_terminals():
+            btn.hide()
+
+    def downOut(self):
+        """Show down board output"""
+        for btn in self.dBoardOut.get_terminals():
+            btn.show()
+        for btn in self.dBoardInp.get_terminals():
+            btn.hide()
+
+    def iterate_uInp1(self):
+        return self.uBoardInp.iter_terminals1()
     
-    def iterate_upper_Inp2(self):
-        return self.upper_boardInp.iter_terminals2()
+    def iterate_uInp2(self):
+        return self.uBoardInp.iter_terminals2()
     
-    def iterate_down_Inp1(self):
-        return self.down_boardInp.iter_terminals1()
+    def iterate_dInp1(self):
+        return self.dBoardInp.iter_terminals1()
     
-    def iterate_down_Inp2(self):
-        return self.down_boardInp.iter_terminals2()
+    def iterate_dInp2(self):
+        return self.dBoardInp.iter_terminals2()
     
-    def iterate_upper_Out1(self):
-        return self.upper_boardOut.iter_terminals1()
+    def iterate_uOut1(self):
+        return self.uBoardOut.iter_terminals1()
     
-    def iterate_upper_Out2(self):
-        return self.upper_boardOut.iter_terminals2()
+    def iterate_uOut2(self):
+        return self.uBoardOut.iter_terminals2()
     
-    def iterate_down_Out1(self):
-        return self.down_boardOut.iter_terminals1()
+    def iterate_dOut1(self):
+        return self.dBoardOut.iter_terminals1()
     
-    def iterate_down_Out2(self):
-        return self.down_boardOut.iter_terminals2()
+    def iterate_dOut2(self):
+        return self.dBoardOut.iter_terminals2()
     
     def iterate_processor_B(self):
         return self.processor.iter_terminals1()

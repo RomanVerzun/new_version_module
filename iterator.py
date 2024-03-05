@@ -1,4 +1,4 @@
-class LineIterator:
+class Iterator:
     def __init__(self, buttons):
         self.buttons = buttons
         self.index = 0
