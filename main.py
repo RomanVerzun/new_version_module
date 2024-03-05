@@ -12,7 +12,7 @@ class Window(QWidget):
         super().__init__()
 
         self.menu()
-        self.module = MODULE(self.upper_board.currentText(), self.down_board.currentText())
+        self.module = MODULE()
 
         self.main()
 

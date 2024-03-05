@@ -19,18 +19,32 @@ class Board_IO:
 
     def create_button(self, text, index):
         button = QPushButton(text)
-        if self.ioStatus == 'R':
-            button.setEnabled(True)
-            bg = 'blue'
-        elif self.ioStatus == 'I':
-            button.setEnabled(False)
-            bg = 'green'
-        color, background = ('black', 'yellow') if index in [self.SIZE[0], self.SIZE[-1]] else ('black', bg)
+        color, background = ('black', 'yellow') if index in [self.SIZE[0], self.SIZE[-1]] else ('black', self.bg)
         button.setStyleSheet(f'color: {color}; background-color: {background}')
+        if background != self.bg or background == 'green':
+            button.setEnabled(False)
         return button
-
+    
     def iter_terminals1(self):
         return LineIterator(self.terminals1)
     
     def iter_terminals2(self):
         return LineIterator(self.terminals2)
+    
+
+class INPUTS(Board_IO):
+    def __init__(self, terminal_block1: str, terminal_block2: str):
+        self.bg = 'green'
+        super().__init__(terminal_block1, terminal_block2, ioStatus='I')
+
+
+class OUTPUTS(Board_IO):
+    def __init__(self, terminal_block1: str, terminal_block2: str):
+        self.bg = '#66ffff'
+        super().__init__(terminal_block1, terminal_block2, ioStatus='R')
+
+
+class PROCESSOR(Board_IO):
+    def __init__(self):
+        self.bg = 'green'
+        super().__init__(terminal_block1='B', terminal_block2='E', ioStatus='I')
