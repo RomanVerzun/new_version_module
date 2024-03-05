@@ -28,8 +28,8 @@ class PROCESSOR:
                 self.buttons_lineE[i-1].setStyleSheet('color: black; background-color: yellow')
 
 
-    def iter_lineB(self):
+    def iter_terminalsB(self):
         return LineIterator(self.buttons_lineB)
 
-    def iter_lineE(self):
+    def iter_terminalsE(self):
         return LineIterator(self.buttons_lineE)
