@@ -3,8 +3,7 @@ from PyQt6.QtCore    import *
 from PyQt6.QtGui     import *
 
 from processor import PROCESSOR
-from module_io import Board_IO
-#from outputs import OUTPUTS
+from board_io import Board_IO
     
 
 class MODULE:
