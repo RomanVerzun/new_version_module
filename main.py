@@ -33,61 +33,17 @@ class Window(QWidget):
 
     def main(self):
         self.main_layout = QVBoxLayout()
+        list_of_buttons = self.module.create_buttons()
 
-        inputC = QHBoxLayout()
-        for button in self.module.iterate_dInp1():
-            inputC.addWidget(button)
+        for buttons_list in list_of_buttons:
+            horizontal_layout =  self.create_layout_with_buttons(buttons_list)
+            self.main_layout.addLayout(horizontal_layout)
 
-        inputD = QHBoxLayout()
-        for button in self.module.iterate_dInp2():
-            inputD.addWidget(button)
-
-        relayC = QHBoxLayout()
-        for button in self.module.iterate_dOut1():
-            button.hide()
-            relayC.addWidget(button)
-
-        relayD = QHBoxLayout()
-        for button in self.module.iterate_dOut2():
-            button.hide()
-            relayD.addWidget(button)
-
-        inputA = QHBoxLayout()
-        for button in self.module.iterate_uInp1():
-            inputA.addWidget(button)
-
-        inputF = QHBoxLayout()
-        for button in self.module.iterate_uInp2():
-            inputF.addWidget(button)
-
-        relayA = QHBoxLayout()
-        for button in self.module.iterate_uOut1():
-            button.hide()
-            relayA.addWidget(button)
-
-        relayF = QHBoxLayout()
-        for button in self.module.iterate_uOut2():
-            relayF.addWidget(button)
-            button.hide()
-
-        inputB = QHBoxLayout()
-        for button in self.module.iterate_processor_B():
-            inputB.addWidget(button)
-
-        inputE = QHBoxLayout()
-        for button in self.module.iterate_processor_E():
-            inputE.addWidget(button)
-
-        self.main_layout.addLayout(inputF) 
-        self.main_layout.addLayout(relayF) 
-        self.main_layout.addLayout(inputE)  
-        self.main_layout.addLayout(inputD)  
-        self.main_layout.addLayout(relayD)  
-        self.main_layout.addLayout(inputC)  
-        self.main_layout.addLayout(relayC)  
-        self.main_layout.addLayout(inputB)  
-        self.main_layout.addLayout(inputA)  
-        self.main_layout.addLayout(relayA)  
+    def create_layout_with_buttons(self, buttons):
+        layout = QHBoxLayout()
+        for button in buttons:
+            layout.addWidget(button)
+        return layout
 
     def menu(self):
         self.upper_board_lb  = QLabel('Верхняя плата')

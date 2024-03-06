@@ -46,28 +46,28 @@ class MODULE:
         for btn in self.dBoardInp.get_terminals():
             btn.hide()
 
-    def iterate_uInp1(self):
+    def iterate_cInp(self):
         return self.uBoardInp.iter_terminals1()
     
-    def iterate_uInp2(self):
+    def iterate_dInp(self):
         return self.uBoardInp.iter_terminals2()
     
-    def iterate_dInp1(self):
+    def iterate_aInp(self):
         return self.dBoardInp.iter_terminals1()
     
-    def iterate_dInp2(self):
+    def iterate_fInp(self):
         return self.dBoardInp.iter_terminals2()
     
-    def iterate_uOut1(self):
+    def iterate_cOut(self):
         return self.uBoardOut.iter_terminals1()
     
-    def iterate_uOut2(self):
+    def iterate_dOut(self):
         return self.uBoardOut.iter_terminals2()
     
-    def iterate_dOut1(self):
+    def iterate_aOut(self):
         return self.dBoardOut.iter_terminals1()
     
-    def iterate_dOut2(self):
+    def iterate_fOut(self):
         return self.dBoardOut.iter_terminals2()
     
     def iterate_processor_B(self):
@@ -75,3 +75,62 @@ class MODULE:
     
     def iterate_processor_E(self):
         return self.processor.iter_terminals2()
+
+    def create_buttons(self):
+
+        aInp_list = list()
+        for button in self.iterate_aInp():
+            aInp_list.append(button)
+
+        cInp_list = list()
+        for button in self.iterate_cInp():
+            cInp_list.append(button)
+        
+        dInp_list = list()
+        for button in self.iterate_dInp():
+            dInp_list.append(button)
+
+        fInp_list = list()
+        for button in self.iterate_fInp():
+            fInp_list.append(button)
+
+        aOut_list = list()
+        for button in self.iterate_aOut():
+            button.hide()
+            aOut_list.append(button)
+
+        cOut_list = list()
+        for button in self.iterate_cOut():
+            button.hide()
+            cOut_list.append(button)
+
+        dOut_list = list()
+        for button in self.iterate_dOut():
+            button.hide()
+            dOut_list.append(button)
+
+        fOut_list = list()
+        for button in self.iterate_fOut():
+            button.hide()
+            fOut_list.append(button)
+        
+        b_list = list()
+        for button in self.iterate_processor_B():
+            b_list.append(button)
+
+        e_list = list()
+        for button in self.iterate_processor_E():
+            e_list.append(button)
+        
+        return [
+            dInp_list, 
+            dOut_list, 
+            e_list,
+            fInp_list,
+            fOut_list,
+            aInp_list, 
+            aOut_list, 
+            b_list, 
+            cInp_list, 
+            cOut_list, 
+        ]
