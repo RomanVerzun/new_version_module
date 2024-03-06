@@ -2,21 +2,26 @@ from PyQt6.QtWidgets import *
 from PyQt6.QtCore    import *
 from PyQt6.QtGui     import *
 
-from board_io import PROCESSOR, INPUTS, OUTPUTS
+from board_io       import PROCESSOR, INPUTS, OUTPUTS
+from connection     import SerialConnection
+from dcon_protocol  import Dcon
     
 
 class MODULE:
     def __init__(self):
         # upper board input
-        self.uBoardInp = INPUTS('A', 'F')
-        self.uBoardOut = OUTPUTS('A', 'F')
+        self.uBoardInp  = INPUTS('A', 'F')
+        self.uBoardOut  = OUTPUTS('A', 'F')
 
         # down board input
-        self.dBoardInp = INPUTS('C', 'D')
-        self.dBoardOut = OUTPUTS('C', 'D')
+        self.dBoardInp  = INPUTS('C', 'D')
+        self.dBoardOut  = OUTPUTS('C', 'D')
 
         # processor
-        self.processor = PROCESSOR()
+        self.processor  = PROCESSOR()
+
+        self.connection = SerialConnection()
+        self.request    = Dcon()
     
     def upInp(self):
         """Show upper board input"""

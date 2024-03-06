@@ -19,12 +19,7 @@ class Dcon():
         data     = response[:-2]
         checksum = response[-2:]
         x = sum(ord(char) for char in data)
-        print(x)
         ...
     
     def parse_the_response(self):
         ...
-
-if __name__ == '__main__':
-    test = Dcon()
-    print(test.create_request('-', 186, ''))

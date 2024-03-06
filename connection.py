@@ -1,27 +1,35 @@
-import serial
+from PyQt6.QtWidgets import QApplication, QMainWindow
+from PyQt6.QtSerialPort import QSerialPort, QSerialPortInfo
+from PyQt6.QtCore import QTimer
 from dcon_protocol import Dcon
 
-class Connection():
-    def __init__(self, port='COM4', address=0, baud_rate=115200) -> None:
-        self.port       = port
-        self.address    = address
-        self.baud_rate  = baud_rate
-        self.read_inputs = '-'
-        self.write_outputs = ''
-    
-    def connect(self):
-        try:
-            with serial.Serial(self.port, self.baud_rate, timeout=1) as ser:
-                if ser.is_open:
-                    ...
-        except Exception as e:
-            print(e)
-    
-    def request(self, command, address):
-        req = Dcon()
-        req.create_request('-', 27, '')
-        return req
 
-if __name__ == '__main__':
-    con = Connection(port='COM4', address='', baud_rate=115200)
-    con.request('+', 27)
+class SerialConnection():
+    def __init__(self, port:str, baud_rate:int):
+        super().__init__()
+        self.port = port
+        self.baud_rate = baud_rate
+
+        self.serial = QSerialPort()
+        self.initSerialPort()
+        self.startAutomaticRequests()
+
+    def initSerialPort(self):
+        self.serial.setPortName(self.port)  
+        self.serial.setBaudRate(self.baud_rate)
+        if not self.serial.open(QSerialPort.OpenModeFlag.ReadWrite):
+            print(f"Failed to open port {self.serial.portName()}")
+        self.serial.readyRead.connect(self.readData)
+
+    def startAutomaticRequests(self):
+        self.timer = QTimer(self)
+        self.timer.timeout.connect(self.writeData)
+        self.timer.start(200)  # 200 мс
+
+    def writeData(self, character, address, command):
+        request = self.request.create_request(character, address, command)
+        self.serial.write(request.encode())
+
+    def readData(self):
+        if self.serial.canReadLine():
+            response = self.serial.readLine()
