@@ -1,10 +1,8 @@
 from PyQt6.QtWidgets import QApplication, QMainWindow
 from PyQt6.QtSerialPort import QSerialPort, QSerialPortInfo
 from PyQt6.QtCore import QTimer, QByteArray
-from dcon_protocol import Dcon
+from dcon import Dcon
 
-
-binary_data = None
 
 class SerialConnection():
     def __init__(self):
@@ -32,7 +30,6 @@ class SerialConnection():
 
         self.timer.timeout.connect(self.writeData)
         self.serial.readyRead.connect(self.readData)
-        return 
 
     def writeData(self):
         self.serial.write(self.request.encode())

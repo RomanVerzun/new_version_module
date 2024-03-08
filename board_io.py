@@ -60,7 +60,6 @@ class INPUTS(Board_IO):
     def __init__(self, terminal_block1: str, terminal_block2: str):
         self.bg = 'green'
         super().__init__(terminal_block1, terminal_block2, ioStatus='I')
-
         self.disable_button()
 
 

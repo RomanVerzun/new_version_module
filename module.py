@@ -3,11 +3,11 @@ from PyQt6.QtCore    import *
 from PyQt6.QtGui     import *
 
 from board_io       import PROCESSOR, INPUTS, OUTPUTS
-from serial_con     import SerialConnection
-from dcon_protocol  import Dcon
+from serial_port     import SerialConnection
+from dcon  import Dcon
     
 
-class MODULE:
+class Module:
     def __init__(self):
         # upper board input
         self.uBoardInp  = INPUTS('A', 'F')
@@ -33,9 +33,6 @@ class MODULE:
         self.connection.initSerialPort(port=port, baud_rate=baud_rate)
         self.connection.startAutomaticRequests(req)
 
-    def getBinaryData(self):
-        return self.connection.getBinaryData()
-    
     def disconnect(self):
         self.connection.disconnect()
     
