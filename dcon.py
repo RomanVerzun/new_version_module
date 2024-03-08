@@ -16,10 +16,11 @@ class Dcon():
         return checksum_hex
     
     def checksum_verification(self, response):
+        #print(response)
+        data     = response[:-2]
+        x = sum(ord(char) for char in data)
+    
+    def parsedResponse(self, response):
         data     = response[:-2]
         checksum = response[-2:]
-        x = sum(ord(char) for char in data)
-        ...
-    
-    def parse_the_response(self):
-        ...
+        return data, checksum

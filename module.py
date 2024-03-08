@@ -3,8 +3,8 @@ from PyQt6.QtCore    import *
 from PyQt6.QtGui     import *
 
 from board_io       import PROCESSOR, INPUTS, OUTPUTS
-from serial_port     import SerialConnection
-from dcon  import Dcon
+from SerialConnection    import SerialConnection
+from dcon           import Dcon
     
 
 class Module:
@@ -20,22 +20,14 @@ class Module:
         # processor
         self.processor  = PROCESSOR()
 
-        self.request    = Dcon()
+        self.dcon    = Dcon()
         self.connection = SerialConnection()
 
     def connect(self, port:str, character, module_address, command, baud_rate=115200):
-        self.port = port
-        self.baud_rate = baud_rate
-        self.character = character
-        self.module_address = module_address
-        self.command = command
-        req = self.request.create_request(character=self.character, module_address=self.module_address, command=self.command)
-        self.connection.initSerialPort(port=port, baud_rate=baud_rate)
+        req = self.dcon.create_request(character=self.character, module_address=self.module_address, command=self.command)
+        self.connection.OpenSerialPort(port=port, baud_rate=baud_rate)
         self.connection.startAutomaticRequests(req)
 
-    def disconnect(self):
-        self.connection.disconnect()
-    
     def upInp(self):
         """Show upper board input"""
         for btn in self.uBoardInp.get_terminals():

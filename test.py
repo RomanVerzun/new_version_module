@@ -1,16 +1,13 @@
-import weakref
-s1 = {1, 2, 3}
-s2 = s1
+import logging
 
-def bye():
-    print('...like tears in the rain.')
+logging.basicConfig(filename='app.log', filemode='w', level=logging.DEBUG,
+                    format='%(name)s - %(levelname)s - %(message)s',
+                    datefmt='%d-%b-%y %H:%M:%S')
 
-ender = weakref.finalize(s1, bye)
-print(ender.alive)
+logger = logging.getLogger(__name__)
 
-del s1
-
-print(ender.alive)
-
-se = 'spam'
-print(ender.alive)
+logger.debug("Debug")
+logger.info("INFO")
+logger.warning("Warning")
+logger.error("ERROR")
+logger.critical("CRITICAL")
