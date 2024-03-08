@@ -1,13 +1,24 @@
-import logging
+from functools import singledispatch
+from collections import abc
+import fractions
+import decimal
+import html
+import numbers
 
-logging.basicConfig(filename='app.log', filemode='w', level=logging.DEBUG,
-                    format='%(name)s - %(levelname)s - %(message)s',
-                    datefmt='%d-%b-%y %H:%M:%S')
+@singledispatch
+def htmlize(obj: object) -> str:
+    content = html.escape(repr(obj))
+    return f'<pre>{content}</pre>'
 
-logger = logging.getLogger(__name__)
+@htmlize.register
+def _(text: str)->str:
+    content = html.escape(text).replace('\n', '<br/>\n')
+    return f'</p>{content}</p>'
 
-logger.debug("Debug")
-logger.info("INFO")
-logger.warning("Warning")
-logger.error("ERROR")
-logger.critical("CRITICAL")
+@htmlize.register
+def _(n: numbers.Integral)->str:
+    return f'<pre>{n}</pre>'
+
+@htmlize.register
+def _(n:bool)->str:
+    return f'<pre>{n}</pre>'
