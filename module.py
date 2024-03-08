@@ -3,7 +3,7 @@ from PyQt6.QtCore    import *
 from PyQt6.QtGui     import *
 
 from board_io       import PROCESSOR, INPUTS, OUTPUTS
-from serial_con     import SerialConnection, input_binary_data
+from serial_con     import SerialConnection
 from dcon_protocol  import Dcon
     
 

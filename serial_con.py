@@ -3,7 +3,6 @@ from PyQt6.QtSerialPort import QSerialPort, QSerialPortInfo
 from PyQt6.QtCore import QTimer, QByteArray
 from dcon_protocol import Dcon
 
-import time
 
 binary_data = None
 
