@@ -11,13 +11,45 @@ class Window(QWidget):
     def __init__(self):
         super().__init__()
 
+        timer = QTimer()
+        timer.start(100)
+        timer.timeout.connect(self.display_input())
+
         self.menu()
         self.module = MODULE()
         self.main()
         self.initUI()
 
+
         self.upper_board.currentTextChanged.connect(self.replacement_upper)
         self.down_board.currentTextChanged. connect(self.replacement_down)
+
+        self.connect_btn.setCheckable(True)
+        self.connect_btn.clicked.connect(self.connect_port)
+
+
+        self.test_btn.clicked.connect(self.test_relays)
+        self.find_btn.clicked.connect(self.find_module_address)
+
+        self.timer = QTimer()
+        self.timer.start(100)
+
+
+    
+    def connect_port(self):
+        self.port_LineEdit.setText('COM4')
+        self.address_spinBox.setValue(27)
+
+        if self.connect_btn.isChecked():
+            self.module.connect(port=self.port_LineEdit.text(), character='-', module_address=self.address_spinBox.value(), command='', baud_rate=115200)
+        else:
+            self.module.disconnect()
+
+    def test_relays(self):
+        print("test_relays")
+    
+    def find_module_address(self):
+        print("find_module")
 
     def replacement_upper(self, str):
         if str == 'outputs':
@@ -81,6 +113,11 @@ class Window(QWidget):
         self.monitor.addLayout(self.main_layout)
 
         self.setLayout(self.monitor)
+    
+    def display_input(self):
+        print(self.module.getBinaryData())
+        ...
+
 
 
 if __name__ == "__main__":

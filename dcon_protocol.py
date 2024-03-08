@@ -5,7 +5,7 @@ class Dcon():
     def create_request(self, character, module_address, command):
         if module_address is None:
             raise ValueError("Module address can't be None")
-        address = str(hex(module_address))[2:].upper()
+        address = str(hex(module_address))[2:].upper().zfill(2)
         request_string = f"{character}{address}{command}"
         checksum = self.create_checksum(request_string)
         return (request_string + checksum + '\r')
