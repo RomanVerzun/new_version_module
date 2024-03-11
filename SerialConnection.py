@@ -4,7 +4,7 @@ from PyQt6.QtCore import QTimer, QByteArray
 from logger import logger
 from dcon import Dcon
 
-TIMER_INTERVAL = 500
+TIMER_INTERVAL = 200
 
 class SerialConnection():
     def __init__(self):

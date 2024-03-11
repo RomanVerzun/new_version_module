@@ -32,12 +32,11 @@ class Window(QWidget):
     def connect_module(self):
         if self.connect_btn.isChecked():
             self.test_btn.setEnabled(True)
-            self.InputstatusRequest = self.module.dcon.create_request(character='-', module_address=self.address_spinBox.value(), command='')
+            self.inputStatusRequest = self.module.dcon.create_request(character='-', module_address=self.address_spinBox.value(), command='')
             self.module.connection.OpenSerialPort(port=self.port_LineEdit.text(), baud_rate=115200)
             self.module.connection.connect()
-            self.module.connection.startAutomaticRequests(request=self.InputstatusRequest)
-
-            self.display_input()
+            self.module.connection.startAutomaticRequests(request=self.inputStatusRequest)
+            self.module.show_inputs()
         else:
             self.test_btn.setEnabled(False)
             self.module.connection.disconnect()
@@ -48,7 +47,7 @@ class Window(QWidget):
             self.outputRelaySet = self.module.request.create_request(character='+', module_address=self.address_spinBox.value(), command='ff00')
             self.module.connection.changeRequest(self.outputRelaySet)
         else:
-            self.module.connection.changeRequest(self.InputstatusRequest)
+            self.module.connection.changeRequest(self.inputStatusRequest)
             self.connect_btn.setEnabled(True)
             ...
     
@@ -75,16 +74,6 @@ class Window(QWidget):
             horizontal_layout =  self.create_layout_with_buttons(buttons_list)
             self.main_layout.addLayout(horizontal_layout)
         
-    def display_input(self):
-        response = self.module.connection.getData()
-        data, checksum = self.module.dcon.parsedResponse(response)
-        print(data, checksum)
-        checksumVerificationStatus = self.module.dcon.checksum_verification(response)
-        if ~checksumVerificationStatus:
-            QMessageBox.information(self, 'Warning', f'Ошибка контрольной суммы')
-            raise ValueError
-
-
     def create_layout_with_buttons(self, buttons):
         layout = QHBoxLayout()
         for button in buttons:

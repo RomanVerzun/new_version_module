@@ -18,11 +18,11 @@ class Dcon():
         return checksum_hex
     
     def checksum_verification(self, response):
-        #print(response)
-        data     = response[:-2]
+        data     = response[1:-3]
+        checksum = response[-3:-1]
         x = sum(ord(char) for char in data)
     
     def parsedResponse(self, response):
-        data     = response[:-2]
-        checksum = response[-2:]
+        data     = response[1:-3]
+        checksum = response[-3:-1]
         return data, checksum

@@ -27,6 +27,28 @@ class Module:
         req = self.dcon.create_request(character=self.character, module_address=self.module_address, command=self.command)
         self.connection.OpenSerialPort(port=port, baud_rate=baud_rate)
         self.connection.startAutomaticRequests(req)
+    
+    def show_inputs(self):
+        response = self.connection.getData()
+        data, checksum = self.dcon.parsedResponse(response)
+        checksumVerificationStatus = self.dcon.checksum_verification(response)
+        binary_data = ''.join(format(int(c, 16), '04b') for c in data)
+
+        activeInput     = 'red'
+        inactiveInput   = 'green'
+        #for index, i in enumerate(self.aInp_list, start=16):
+        #    color = activeInput if binary_data[2] == '0' else inactiveInput
+        #    i.setStyleSheet(f'color: "black; background-color:{color}')
+
+        for i in self.cInp_list:
+            ...
+
+        for i in self.dInp_list:
+            ...
+
+        for i in self.fInp_list:
+            ...
+
 
     def upInp(self):
         """Show upper board input"""
@@ -56,28 +78,28 @@ class Module:
         for btn in self.dBoardInp.get_terminals():
             btn.hide()
 
-    def iterate_cInp(self):
+    def iterate_aInp(self):
         return self.uBoardInp.iter_terminals1()
     
-    def iterate_dInp(self):
+    def iterate_fInp(self):
         return self.uBoardInp.iter_terminals2()
     
-    def iterate_aInp(self):
+    def iterate_cInp(self):
         return self.dBoardInp.iter_terminals1()
     
-    def iterate_fInp(self):
+    def iterate_dInp(self):
         return self.dBoardInp.iter_terminals2()
     
-    def iterate_cOut(self):
+    def iterate_aOut(self):
         return self.uBoardOut.iter_terminals1()
     
-    def iterate_dOut(self):
+    def iterate_fOut(self):
         return self.uBoardOut.iter_terminals2()
     
-    def iterate_aOut(self):
+    def iterate_cOut(self):
         return self.dBoardOut.iter_terminals1()
     
-    def iterate_fOut(self):
+    def iterate_dOut(self):
         return self.dBoardOut.iter_terminals2()
     
     def iterate_Processor_B(self):
@@ -88,59 +110,59 @@ class Module:
 
     def create_buttons(self):
 
-        aInp_list = list()
+        self.aInp_list = list()
         for button in self.iterate_aInp():
-            aInp_list.append(button)
+            self.aInp_list.append(button)
 
-        cInp_list = list()
+        self.cInp_list = list()
         for button in self.iterate_cInp():
-            cInp_list.append(button)
+            self.cInp_list.append(button)
         
-        dInp_list = list()
+        self.dInp_list = list()
         for button in self.iterate_dInp():
-            dInp_list.append(button)
+            self.dInp_list.append(button)
 
-        fInp_list = list()
+        self.fInp_list = list()
         for button in self.iterate_fInp():
-            fInp_list.append(button)
+            self.fInp_list.append(button)
 
-        aOut_list = list()
+        self.aOut_list = list()
         for button in self.iterate_aOut():
             button.hide()
-            aOut_list.append(button)
+            self.aOut_list.append(button)
 
-        cOut_list = list()
+        self.cOut_list = list()
         for button in self.iterate_cOut():
             button.hide()
-            cOut_list.append(button)
+            self.cOut_list.append(button)
 
-        dOut_list = list()
+        self.dOut_list = list()
         for button in self.iterate_dOut():
             button.hide()
-            dOut_list.append(button)
+            self.dOut_list.append(button)
 
-        fOut_list = list()
+        self.fOut_list = list()
         for button in self.iterate_fOut():
             button.hide()
-            fOut_list.append(button)
+            self.fOut_list.append(button)
         
-        b_list = list()
+        self.b_list = list()
         for button in self.iterate_Processor_B():
-            b_list.append(button)
+            self.b_list.append(button)
 
-        e_list = list()
+        self.e_list = list()
         for button in self.iterate_Processor_E():
-            e_list.append(button)
+            self.e_list.append(button)
         
         return [
-            dInp_list, 
-            dOut_list, 
-            e_list,
-            fInp_list,
-            fOut_list,
-            aInp_list, 
-            aOut_list, 
-            b_list, 
-            cInp_list, 
-            cOut_list, 
+            self.fInp_list, 
+            self.fOut_list, 
+            self.e_list,
+            self.dInp_list,
+            self.dOut_list,
+            self.cInp_list, 
+            self.cOut_list, 
+            self.b_list, 
+            self.aInp_list, 
+            self.aOut_list, 
         ]
