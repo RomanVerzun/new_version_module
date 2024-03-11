@@ -1,10 +1,9 @@
-import logging
+class MacroCommand:
+    """Command"""
 
-logging.basicConfig(
-    level=logging.DEBUG,
-    format='%(levelname)s: %(filename)s:%(lineno)d: %(message)s'
-)
-
-logger = logging.getLogger(__name__)
-
-logger.info('Это сообщение уровня INFO')
+    def __init__(self, commands):
+        self.commands = list(commands)
+    
+    def __call__(self):
+        for command in self.commands:
+            command()

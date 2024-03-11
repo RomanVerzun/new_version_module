@@ -13,7 +13,6 @@ class Module:
         self.uBoardInp  = Inputs('A', 'F')
         self.uBoardOut  = Outputs('A', 'F')
 
-        logger.info("hello")
         # down board input
         self.dBoardInp  = Inputs('C', 'D')
         self.dBoardOut  = Outputs('C', 'D')

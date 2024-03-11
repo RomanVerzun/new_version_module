@@ -11,7 +11,6 @@ import os
 class Window(QWidget):
     def __init__(self):
         super().__init__()
-        logger.info("Window")
         self.menu()
         self.module = Module()
         self.main()
