@@ -1,3 +1,5 @@
+from logger import logger
+
 class Dcon():
     def __init__(self):
         ...

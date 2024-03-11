@@ -2,25 +2,26 @@ from PyQt6.QtWidgets import *
 from PyQt6.QtCore    import *
 from PyQt6.QtGui     import *
 
-from board_io       import PROCESSOR, INPUTS, OUTPUTS
-from SerialConnection    import SerialConnection
-from dcon           import Dcon
-    
+from board_io           import Processor, Inputs, Outputs
+from SerialConnection   import SerialConnection
+from dcon               import Dcon
+from logger             import logger
 
 class Module:
     def __init__(self):
         # upper board input
-        self.uBoardInp  = INPUTS('A', 'F')
-        self.uBoardOut  = OUTPUTS('A', 'F')
+        self.uBoardInp  = Inputs('A', 'F')
+        self.uBoardOut  = Outputs('A', 'F')
 
+        logger.info("hello")
         # down board input
-        self.dBoardInp  = INPUTS('C', 'D')
-        self.dBoardOut  = OUTPUTS('C', 'D')
+        self.dBoardInp  = Inputs('C', 'D')
+        self.dBoardOut  = Outputs('C', 'D')
 
-        # processor
-        self.processor  = PROCESSOR()
+        # Processor
+        self.Processor  = Processor()
 
-        self.dcon    = Dcon()
+        self.dcon       = Dcon()
         self.connection = SerialConnection()
 
     def connect(self, port:str, character, module_address, command, baud_rate=115200):
@@ -80,11 +81,11 @@ class Module:
     def iterate_fOut(self):
         return self.dBoardOut.iter_terminals2()
     
-    def iterate_processor_B(self):
-        return self.processor.iter_terminals1()
+    def iterate_Processor_B(self):
+        return self.Processor.iter_terminals1()
     
-    def iterate_processor_E(self):
-        return self.processor.iter_terminals2()
+    def iterate_Processor_E(self):
+        return self.Processor.iter_terminals2()
 
     def create_buttons(self):
 
@@ -125,11 +126,11 @@ class Module:
             fOut_list.append(button)
         
         b_list = list()
-        for button in self.iterate_processor_B():
+        for button in self.iterate_Processor_B():
             b_list.append(button)
 
         e_list = list()
-        for button in self.iterate_processor_E():
+        for button in self.iterate_Processor_E():
             e_list.append(button)
         
         return [

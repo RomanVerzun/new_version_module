@@ -1,15 +1,17 @@
-from PyQt6.QtWidgets import QWidget, QPushButton, QLabel, QLineEdit, QMessageBox
+from PyQt6.QtWidgets import *
 from PyQt6.QtCore    import *
 from PyQt6.QtGui     import *
 
 from module import Module
+from logger import logger
 import sys
+import os
 
 
 class Window(QWidget):
     def __init__(self):
         super().__init__()
-
+        logger.info("Window")
         self.menu()
         self.module = Module()
         self.main()
@@ -31,10 +33,10 @@ class Window(QWidget):
     def connect_module(self):
         if self.connect_btn.isChecked():
             self.test_btn.setEnabled(True)
-            self.inputStatusRequest = self.module.dcon.create_request(character='-', module_address=self.address_spinBox.value(), command='')
+            self.InputstatusRequest = self.module.dcon.create_request(character='-', module_address=self.address_spinBox.value(), command='')
             self.module.connection.OpenSerialPort(port=self.port_LineEdit.text(), baud_rate=115200)
             self.module.connection.connect()
-            self.module.connection.startAutomaticRequests(request=self.inputStatusRequest)
+            self.module.connection.startAutomaticRequests(request=self.InputstatusRequest)
 
             self.display_input()
         else:
@@ -47,7 +49,7 @@ class Window(QWidget):
             self.outputRelaySet = self.module.request.create_request(character='+', module_address=self.address_spinBox.value(), command='ff00')
             self.module.connection.changeRequest(self.outputRelaySet)
         else:
-            self.module.connection.changeRequest(self.inputStatusRequest)
+            self.module.connection.changeRequest(self.InputstatusRequest)
             self.connect_btn.setEnabled(True)
             ...
     
@@ -55,15 +57,15 @@ class Window(QWidget):
         print("find_module")
 
     def replacement_upper(self, str):
-        if str == 'outputs':
+        if str == 'Outputs':
             self.module.upOut()
-        elif str == 'inputs':
+        elif str == 'Inputs':
             self.module.upInp()
 
     def replacement_down(self, str):
-        if str == 'outputs':
+        if str == 'Outputs':
             self.module.downOut()
-        elif str == 'inputs':
+        elif str == 'Inputs':
             self.module.downInp()
 
     def main(self):
@@ -105,8 +107,8 @@ class Window(QWidget):
         self.address_spinBox.setMinimum(0)
         self.address_spinBox.setMaximum(255)
 
-        self.upper_board.addItems(['inputs', 'outputs'])
-        self.down_board.addItems (['inputs', 'outputs'])
+        self.upper_board.addItems(['Inputs', 'Outputs'])
+        self.down_board.addItems (['Inputs', 'Outputs'])
         self.connect_btn.setCheckable(True)
         self.test_btn.setCheckable(True)
 

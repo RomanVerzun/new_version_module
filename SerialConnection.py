@@ -1,6 +1,7 @@
 from PyQt6.QtWidgets import QApplication, QMainWindow
 from PyQt6.QtSerialPort import QSerialPort, QSerialPortInfo
 from PyQt6.QtCore import QTimer, QByteArray
+from logger import logger
 from dcon import Dcon
 
 TIMER_INTERVAL = 500

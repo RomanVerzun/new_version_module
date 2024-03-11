@@ -3,6 +3,7 @@ from PyQt6.QtCore    import *
 from PyQt6.QtGui     import *
 
 from iterator import Iterator
+from logger import logger
 
 class Board_IO:
     def __init__(self, terminal_block1: str, terminal_block2: str, ioStatus: str):
@@ -56,21 +57,21 @@ class Board_IO:
             btn.hide()
     
 
-class INPUTS(Board_IO):
+class Inputs(Board_IO):
     def __init__(self, terminal_block1: str, terminal_block2: str):
         self.bg = 'green'
         super().__init__(terminal_block1, terminal_block2, ioStatus='I')
         self.disable_button()
 
 
-class OUTPUTS(Board_IO):
+class Outputs(Board_IO):
     def __init__(self, terminal_block1: str, terminal_block2: str):
         self.bg = '#66ffff'
         super().__init__(terminal_block1, terminal_block2, ioStatus='R')
         self.enable_button()
 
 
-class PROCESSOR(Board_IO):
+class Processor(Board_IO):
     def __init__(self):
         self.bg = 'green'
         super().__init__(terminal_block1='B', terminal_block2='E', ioStatus='I')
