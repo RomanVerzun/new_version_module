@@ -26,8 +26,44 @@ class Window(QWidget):
         self.connect_btn.setCheckable(True)
         self.connect_btn.clicked.connect(self.connect_module)
 
-        self.test_btn.clicked.connect(self.module.uBoardOut.getState)
+        self.test_btn.clicked.connect(self.test_relays)
         self.find_btn.clicked.connect(self.find_module_address)
+
+        self.module.aOut_list[1].toggled.connect(self.module.buttonPressed_A2)
+        self.module.aOut_list[2].toggled.connect(self.module.buttonPressed_A3)
+        self.module.aOut_list[3].toggled.connect(self.module.buttonPressed_A4)
+        self.module.aOut_list[4].toggled.connect(self.module.buttonPressed_A5)
+        self.module.aOut_list[5].toggled.connect(self.module.buttonPressed_A6)
+        self.module.aOut_list[6].toggled.connect(self.module.buttonPressed_A7)
+        self.module.aOut_list[7].toggled.connect(self.module.buttonPressed_A8)
+        self.module.aOut_list[8].toggled.connect(self.module.buttonPressed_A9)
+
+        self.module.fOut_list[1].toggled.connect(self.module.buttonPressed_F2)
+        self.module.fOut_list[2].toggled.connect(self.module.buttonPressed_F3)
+        self.module.fOut_list[3].toggled.connect(self.module.buttonPressed_F4)
+        self.module.fOut_list[4].toggled.connect(self.module.buttonPressed_F5)
+        self.module.fOut_list[5].toggled.connect(self.module.buttonPressed_F6)
+        self.module.fOut_list[6].toggled.connect(self.module.buttonPressed_F7)
+        self.module.fOut_list[7].toggled.connect(self.module.buttonPressed_F8)
+        self.module.fOut_list[8].toggled.connect(self.module.buttonPressed_F9)
+
+        #self.module.cOut_list[1].toggled.connect(self.module.buttonPressed_C2)
+        #self.module.cOut_list[2].toggled.connect(self.module.buttonPressed_C3)
+        #self.module.cOut_list[3].toggled.connect(self.module.buttonPressed_C4)
+        #self.module.cOut_list[4].toggled.connect(self.module.buttonPressed_C5)
+        #self.module.cOut_list[5].toggled.connect(self.module.buttonPressed_C6)
+        #self.module.cOut_list[6].toggled.connect(self.module.buttonPressed_C7)
+        #self.module.cOut_list[7].toggled.connect(self.module.buttonPressed_C8)
+        #self.module.cOut_list[8].toggled.connect(self.module.buttonPressed_C9)
+
+        #self.module.dOut_list[1].toggled.connect(self.module.buttonPressed_D2)
+        #self.module.dOut_list[2].toggled.connect(self.module.buttonPressed_D3)
+        #self.module.dOut_list[3].toggled.connect(self.module.buttonPressed_D4)
+        #self.module.dOut_list[4].toggled.connect(self.module.buttonPressed_D5)
+        #self.module.dOut_list[5].toggled.connect(self.module.buttonPressed_D6)
+        #self.module.dOut_list[6].toggled.connect(self.module.buttonPressed_D7)
+        #self.module.dOut_list[7].toggled.connect(self.module.buttonPressed_D8)
+        #self.module.dOut_list[8].toggled.connect(self.module.buttonPressed_D9)
 
     def connect_module(self):
         if self.connect_btn.isChecked():
@@ -44,7 +80,7 @@ class Window(QWidget):
     def test_relays(self):
         if self.test_btn.isChecked():
             self.connect_btn.setEnabled(False)
-            self.outputRelaySet = self.module.request.create_request(character='+', module_address=self.address_spinBox.value(), command='ff00')
+            self.outputRelaySet = self.module.dcon.create_request('+', self.address_spinBox.value(), command=self.module.state)
             self.module.connection.changeRequest(self.outputRelaySet)
         else:
             self.module.connection.changeRequest(self.inputStatusRequest)

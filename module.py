@@ -6,14 +6,14 @@ from SerialConnection   import SerialConnection
 from board_io    import Processor, Inputs, Outputs
 from dcon        import Dcon
 from logger      import logger
-from relays      import *
+import relays  as rel
 
 class Module:
     def __init__(self):
+        self.state = rel.MASK_R
         # upper board input
         self.uBoardInp  = Inputs('A', 'F')
         self.uBoardOut  = Outputs('A', 'F')
-        self.uBoardOut.terminals1[0].clicked.connect(self.uBoardOut.relay1_1)
 
         # down board input
         self.dBoardInp  = Inputs('C', 'D')
@@ -40,8 +40,11 @@ class Module:
         inactiveInput   = f'color: "black"; background-color: green'
 
         def input_style(binary_index, list_index, inp_list):
-            style = activeInput if binary_data[binary_index] == '0' else inactiveInput
-            inp_list[list_index].setStyleSheet(style)
+            try:
+                style = activeInput if binary_data[binary_index] == '0' else inactiveInput
+                inp_list[list_index].setStyleSheet(style)
+            except:
+                pass
         
         for binary_index, list_index in zip(range(23, 15, -1), range(1, 9)):
             input_style(binary_index, list_index, self.aInp_list)
@@ -62,48 +65,65 @@ class Module:
         
         for binary_index, list_index in zip(range(15, 7, -1), range(1, 9)):
             input_style(binary_index, list_index, self.fInp_list)
+    
+    def updateState(self, relay, state):
+        if state:
+            self.state = self.state & relay
+        else:
+            self.state = self.state | (~relay & rel.MASK_R)
+        logger.info(f'{self.state}')
 
+    def buttonPressed_A2(self, state):
+        self.updateState(rel.RELAY_A02, state)
+        
+    def buttonPressed_A3(self, state):
+        self.updateState(rel.RELAY_A03, state)
+    
+    def buttonPressed_A4(self, state):
+        self.updateState(rel.RELAY_A04, state)
+    
+    def buttonPressed_A5(self, state):
+        self.updateState(rel.RELAY_A05, state)
+    
+    def buttonPressed_A6(self, state):
+        self.updateState(rel.RELAY_A06, state)
+    
+    def buttonPressed_A7(self, state):
+        self.updateState(rel.RELAY_A07, state)
+    
+    def buttonPressed_A8(self, state):
+        self.updateState(rel.RELAY_A08, state)
+    
+    def buttonPressed_A9(self, state):
+        self.updateState(rel.RELAY_A09, state)
 
-       # input_style(33, 6, self.b_list)
-       # input_style(32, 7, self.b_list)
-       # input_style(31, 8, self.b_list)
-       #input_style(39, 1, self.cInp_list)
-       #input_style(38, 2, self.cInp_list)
-       #input_style(37, 3, self.cInp_list)
-       #input_style(36, 4, self.cInp_list)
-       #input_style(35, 5, self.cInp_list)
-       #input_style(34, 6, self.cInp_list)
-       #input_style(33, 7, self.cInp_list)
-       #input_style(32, 8, self.cInp_list)
-#
-        #input_style(0, 1, self.dInp_list)
-        #input_style(1, 2, self.dInp_list)
-        #input_style(30, 3, self.dInp_list)
-        #input_style(31, 4, self.dInp_list)
-        #input_style(5, 5, self.dInp_list)
-        #input_style(4, 6, self.dInp_list)
-        #input_style(3, 7, self.dInp_list)
-        #input_style(2, 8, self.dInp_list)
-#
-        #input_style(29, 1, self.e_list)
-        #input_style(28, 2, self.e_list)
-        #input_style(27, 3, self.e_list)
-        #input_style(26, 4, self.e_list)
-        #input_style(25, 5, self.e_list)
-        #input_style(24, 6, self.e_list)
-        #input_style(7, 7, self.e_list)
-        #input_style(6, 8, self.e_list)
-#
-        #input_style(15, 1, self.fInp_list)
-        #input_style(14, 2, self.fInp_list)
-        #input_style(13, 3, self.fInp_list)
-        #input_style(12, 4, self.fInp_list)
-        #input_style(11, 5, self.fInp_list)
-        #input_style(10, 6, self.fInp_list)
-        #input_style(9, 7, self.fInp_list)
-        #input_style(8, 8, self.fInp_list)
-
-
+    def buttonPressed_F2(self, state):
+        self.updateState(rel.RELAY_F02, state)
+        
+    def buttonPressed_F3(self, state):
+        self.updateState(rel.RELAY_F03, state)
+    
+    def buttonPressed_F4(self, state):
+        self.updateState(rel.RELAY_F04, state)
+    
+    def buttonPressed_F5(self, state):
+        self.updateState(rel.RELAY_F05, state)
+    
+    def buttonPressed_F6(self, state):
+        self.updateState(rel.RELAY_F06, state)
+    
+    def buttonPressed_F7(self, state):
+        self.updateState(rel.RELAY_F07, state)
+    
+    def buttonPressed_F8(self, state):
+        self.updateState(rel.RELAY_F08, state)
+    
+    def buttonPressed_F9(self, state):
+        self.updateState(rel.RELAY_F09, state)
+    
+    def buttonPressed_C1(self, state):
+        ...
+    
     def upInp(self):
         """Show upper board input"""
         for btn in self.uBoardInp.get_terminals():
