@@ -26,7 +26,7 @@ class Window(QWidget):
         self.connect_btn.setCheckable(True)
         self.connect_btn.clicked.connect(self.connect_module)
 
-        self.test_btn.clicked.connect(self.test_relays)
+        self.test_btn.clicked.connect(self.module.uBoardOut.getState)
         self.find_btn.clicked.connect(self.find_module_address)
 
     def connect_module(self):
@@ -36,10 +36,10 @@ class Window(QWidget):
             self.module.connection.OpenSerialPort(port=self.port_LineEdit.text(), baud_rate=115200)
             self.module.connection.connect()
             self.module.connection.startAutomaticRequests(request=self.inputStatusRequest)
-            self.module.show_inputs()
+            self.module.connection.serial.readyRead.connect(self.module.show_inputs)
         else:
             self.test_btn.setEnabled(False)
-            self.module.connection.disconnect()
+            self.module.connection.stop()
 
     def test_relays(self):
         if self.test_btn.isChecked():

@@ -2,16 +2,18 @@ from PyQt6.QtWidgets import *
 from PyQt6.QtCore    import *
 from PyQt6.QtGui     import *
 
-from board_io           import Processor, Inputs, Outputs
 from SerialConnection   import SerialConnection
-from dcon               import Dcon
-from logger             import logger
+from board_io    import Processor, Inputs, Outputs
+from dcon        import Dcon
+from logger      import logger
+from relays      import *
 
 class Module:
     def __init__(self):
         # upper board input
         self.uBoardInp  = Inputs('A', 'F')
         self.uBoardOut  = Outputs('A', 'F')
+        self.uBoardOut.terminals1[0].clicked.connect(self.uBoardOut.relay1_1)
 
         # down board input
         self.dBoardInp  = Inputs('C', 'D')
@@ -34,20 +36,72 @@ class Module:
         checksumVerificationStatus = self.dcon.checksum_verification(response)
         binary_data = ''.join(format(int(c, 16), '04b') for c in data)
 
-        activeInput     = 'red'
-        inactiveInput   = 'green'
-        #for index, i in enumerate(self.aInp_list, start=16):
-        #    color = activeInput if binary_data[2] == '0' else inactiveInput
-        #    i.setStyleSheet(f'color: "black; background-color:{color}')
+        activeInput     = f'color: "black"; background-color: red'
+        inactiveInput   = f'color: "black"; background-color: green'
 
-        for i in self.cInp_list:
-            ...
+        def input_style(binary_index, list_index, inp_list):
+            style = activeInput if binary_data[binary_index] == '0' else inactiveInput
+            inp_list[list_index].setStyleSheet(style)
+        
+        for binary_index, list_index in zip(range(23, 15, -1), range(1, 9)):
+            input_style(binary_index, list_index, self.aInp_list)
+        
+        for binary_index, list_index in zip(range(33, 30, -1), range(6, 9)):
+            input_style(binary_index, list_index, self.b_list)
+        
+        for binary_index, list_index in zip(range(39, 31, -1), range(1, 9)):
+            input_style(binary_index, list_index, self.cInp_list)
+        
+        d_indices = [(0, 1), (1, 2), (30, 3), (31, 4), (5, 5), (4, 6), (3, 7), (2, 8)]
+        for binary_index, list_index in d_indices:
+            input_style(binary_index, list_index, self.dInp_list)
+        
+        e_indices = [(29, 1), (28, 2), (27, 3), (26, 4), (25, 5), (24, 6), (7, 7), (6, 8)]
+        for binary_index, list_index in e_indices:
+            input_style(binary_index, list_index, self.e_list)
+        
+        for binary_index, list_index in zip(range(15, 7, -1), range(1, 9)):
+            input_style(binary_index, list_index, self.fInp_list)
 
-        for i in self.dInp_list:
-            ...
 
-        for i in self.fInp_list:
-            ...
+       # input_style(33, 6, self.b_list)
+       # input_style(32, 7, self.b_list)
+       # input_style(31, 8, self.b_list)
+       #input_style(39, 1, self.cInp_list)
+       #input_style(38, 2, self.cInp_list)
+       #input_style(37, 3, self.cInp_list)
+       #input_style(36, 4, self.cInp_list)
+       #input_style(35, 5, self.cInp_list)
+       #input_style(34, 6, self.cInp_list)
+       #input_style(33, 7, self.cInp_list)
+       #input_style(32, 8, self.cInp_list)
+#
+        #input_style(0, 1, self.dInp_list)
+        #input_style(1, 2, self.dInp_list)
+        #input_style(30, 3, self.dInp_list)
+        #input_style(31, 4, self.dInp_list)
+        #input_style(5, 5, self.dInp_list)
+        #input_style(4, 6, self.dInp_list)
+        #input_style(3, 7, self.dInp_list)
+        #input_style(2, 8, self.dInp_list)
+#
+        #input_style(29, 1, self.e_list)
+        #input_style(28, 2, self.e_list)
+        #input_style(27, 3, self.e_list)
+        #input_style(26, 4, self.e_list)
+        #input_style(25, 5, self.e_list)
+        #input_style(24, 6, self.e_list)
+        #input_style(7, 7, self.e_list)
+        #input_style(6, 8, self.e_list)
+#
+        #input_style(15, 1, self.fInp_list)
+        #input_style(14, 2, self.fInp_list)
+        #input_style(13, 3, self.fInp_list)
+        #input_style(12, 4, self.fInp_list)
+        #input_style(11, 5, self.fInp_list)
+        #input_style(10, 6, self.fInp_list)
+        #input_style(9, 7, self.fInp_list)
+        #input_style(8, 8, self.fInp_list)
 
 
     def upInp(self):

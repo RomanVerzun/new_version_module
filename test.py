@@ -7,3 +7,6 @@ class MacroCommand:
     def __call__(self):
         for command in self.commands:
             command()
+
+x = 32
+print(str(x))
