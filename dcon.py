@@ -5,7 +5,6 @@ class Dcon():
         ...
 
     def create_request(self, character, module_address, command):
-        logger.info(f'{command} {type(command)}')
         if module_address is None:
             raise ValueError("Module address can't be None")
         address = str(hex(module_address))[2:].upper().zfill(2)

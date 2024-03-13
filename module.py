@@ -10,7 +10,8 @@ import relays  as rel
 
 class Module:
     def __init__(self):
-        self.state = rel.MASK_R
+        self.stateAF = 0xffff
+        self.stateDC = 0xffff
         # upper board input
         self.uBoardInp  = Inputs('A', 'F')
         self.uBoardOut  = Outputs('A', 'F')
@@ -49,10 +50,10 @@ class Module:
         for binary_index, list_index in zip(range(23, 15, -1), range(1, 9)):
             input_style(binary_index, list_index, self.aInp_list)
         
-        for binary_index, list_index in zip(range(33, 30, -1), range(6, 9)):
+        for binary_index, list_index in zip(range(34, 31, -1), range(6, 9)):
             input_style(binary_index, list_index, self.b_list)
         
-        for binary_index, list_index in zip(range(39, 31, -1), range(1, 9)):
+        for binary_index, list_index in zip(range(39, 34, -1), range(1, 6)):
             input_style(binary_index, list_index, self.cInp_list)
         
         d_indices = [(0, 1), (1, 2), (30, 3), (31, 4), (5, 5), (4, 6), (3, 7), (2, 8)]
@@ -66,63 +67,117 @@ class Module:
         for binary_index, list_index in zip(range(15, 7, -1), range(1, 9)):
             input_style(binary_index, list_index, self.fInp_list)
     
-    def updateState(self, relay, state):
+    
+    def updateStateAF(self, relay, state):
         if state:
-            self.state = self.state & relay
+            self.stateAF = self.stateAF & relay
         else:
-            self.state = self.state | (~relay & rel.MASK_R)
-        logger.info(f'{self.state}')
+            self.stateAF = self.stateAF | (~relay & rel.MASK_R)
+        return self.stateAF
 
     def buttonPressed_A2(self, state):
-        self.updateState(rel.RELAY_A02, state)
+        self.updateStateAF(rel.RELAY_A02, state)
         
     def buttonPressed_A3(self, state):
-        self.updateState(rel.RELAY_A03, state)
+        self.updateStateAF(rel.RELAY_A03, state)
     
     def buttonPressed_A4(self, state):
-        self.updateState(rel.RELAY_A04, state)
+        self.updateStateAF(rel.RELAY_A04, state)
     
     def buttonPressed_A5(self, state):
-        self.updateState(rel.RELAY_A05, state)
+        self.updateStateAF(rel.RELAY_A05, state)
     
     def buttonPressed_A6(self, state):
-        self.updateState(rel.RELAY_A06, state)
+        self.updateStateAF(rel.RELAY_A06, state)
     
     def buttonPressed_A7(self, state):
-        self.updateState(rel.RELAY_A07, state)
+        self.updateStateAF(rel.RELAY_A07, state)
     
     def buttonPressed_A8(self, state):
-        self.updateState(rel.RELAY_A08, state)
+        self.updateStateAF(rel.RELAY_A08, state)
     
     def buttonPressed_A9(self, state):
-        self.updateState(rel.RELAY_A09, state)
+        self.updateStateAF(rel.RELAY_A09, state)
+
 
     def buttonPressed_F2(self, state):
-        self.updateState(rel.RELAY_F02, state)
+        self.updateStateAF(rel.RELAY_F02, state)
         
     def buttonPressed_F3(self, state):
-        self.updateState(rel.RELAY_F03, state)
+        self.updateStateAF(rel.RELAY_F03, state)
     
     def buttonPressed_F4(self, state):
-        self.updateState(rel.RELAY_F04, state)
+        self.updateStateAF(rel.RELAY_F04, state)
     
     def buttonPressed_F5(self, state):
-        self.updateState(rel.RELAY_F05, state)
+        self.updateStateAF(rel.RELAY_F05, state)
     
     def buttonPressed_F6(self, state):
-        self.updateState(rel.RELAY_F06, state)
+        self.updateStateAF(rel.RELAY_F06, state)
     
     def buttonPressed_F7(self, state):
-        self.updateState(rel.RELAY_F07, state)
+        self.updateStateAF(rel.RELAY_F07, state)
     
     def buttonPressed_F8(self, state):
-        self.updateState(rel.RELAY_F08, state)
+        self.updateStateAF(rel.RELAY_F08, state)
     
     def buttonPressed_F9(self, state):
-        self.updateState(rel.RELAY_F09, state)
+        self.updateStateAF(rel.RELAY_F09, state)
+
+    def updateStateDC(self, relay, state):
+        if state:
+            self.stateDC = self.stateDC & relay
+        else:
+            self.stateDC = self.stateDC | (~relay & rel.MASK_R)
+        return self.stateDC
+
+    def buttonPressed_C2(self, state):
+        self.updateStateDC(rel.RELAY_C02, state)
+        
+    def buttonPressed_C3(self, state):
+        self.updateStateDC(rel.RELAY_C03, state)
     
-    def buttonPressed_C1(self, state):
-        ...
+    def buttonPressed_C4(self, state):
+        self.updateStateDC(rel.RELAY_C04, state)
+    
+    def buttonPressed_C5(self, state):
+        self.updateStateDC(rel.RELAY_C05, state)
+    
+    def buttonPressed_C6(self, state):
+        self.updateStateDC(rel.RELAY_C06, state)
+    
+    def buttonPressed_C7(self, state):
+        self.updateStateDC(rel.RELAY_C07, state)
+    
+    def buttonPressed_C8(self, state):
+        self.updateStateDC(rel.RELAY_C08, state)
+    
+    def buttonPressed_C9(self, state):
+        self.updateStateDC(rel.RELAY_C09, state)
+
+    def buttonPressed_D2(self, state):
+        self.updateStateDC(rel.RELAY_D02, state)
+        
+    def buttonPressed_D3(self, state):
+        self.updateStateDC(rel.RELAY_D03, state)
+    
+    def buttonPressed_D4(self, state):
+        self.updateStateDC(rel.RELAY_D04, state)
+    
+    def buttonPressed_D5(self, state):
+        self.updateStateDC(rel.RELAY_D05, state)
+    
+    def buttonPressed_D6(self, state):
+        self.updateStateDC(rel.RELAY_D06, state)
+    
+    def buttonPressed_D7(self, state):
+        self.updateStateDC(rel.RELAY_D07, state)
+    
+    def buttonPressed_D8(self, state):
+        self.updateStateDC(rel.RELAY_D08, state)
+    
+    def buttonPressed_D9(self, state):
+        self.updateStateDC(rel.RELAY_D09, state)
     
     def upInp(self):
         """Show upper board input"""

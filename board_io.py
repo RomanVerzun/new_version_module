@@ -71,13 +71,9 @@ class Outputs(Board_IO):
         self.bg = '#66ffff'
         super().__init__(terminal_block1, terminal_block2, ioStatus='R')
         self.enable_button()
-        self.test_relays()
     
-    def getState(self):
-        logger.info(f'{self.state}')
-    
-    def test_relays(self):
-        ...
+    #def test_relays(self):
+     #   ...
         
 
 

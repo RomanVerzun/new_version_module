@@ -4,6 +4,7 @@ from PyQt6.QtGui     import *
 
 from module import Module
 from logger import logger
+from time import sleep
 import sys
 import os
 
@@ -11,13 +12,16 @@ import os
 class Window(QWidget):
     def __init__(self):
         super().__init__()
+        self.count = 0
+        self.timer = QTimer(self)
+        self.timer.timeout.connect(self.test_relays)
         self.menu()
         self.module = Module()
         self.main()
         self.initUI()
 
         self.port_LineEdit.setText('COM4')
-        self.address_spinBox.setValue(27)
+        self.address_spinBox.setValue(8)
         self.test_btn.setEnabled(False)
 
         self.upper_board.currentTextChanged.connect(self.replacement_upper)
@@ -26,7 +30,7 @@ class Window(QWidget):
         self.connect_btn.setCheckable(True)
         self.connect_btn.clicked.connect(self.connect_module)
 
-        self.test_btn.clicked.connect(self.test_relays)
+        self.test_btn.clicked.connect(self.startStopRepeating)
         self.find_btn.clicked.connect(self.find_module_address)
 
         self.module.aOut_list[1].toggled.connect(self.module.buttonPressed_A2)
@@ -47,23 +51,23 @@ class Window(QWidget):
         self.module.fOut_list[7].toggled.connect(self.module.buttonPressed_F8)
         self.module.fOut_list[8].toggled.connect(self.module.buttonPressed_F9)
 
-        #self.module.cOut_list[1].toggled.connect(self.module.buttonPressed_C2)
-        #self.module.cOut_list[2].toggled.connect(self.module.buttonPressed_C3)
-        #self.module.cOut_list[3].toggled.connect(self.module.buttonPressed_C4)
-        #self.module.cOut_list[4].toggled.connect(self.module.buttonPressed_C5)
-        #self.module.cOut_list[5].toggled.connect(self.module.buttonPressed_C6)
-        #self.module.cOut_list[6].toggled.connect(self.module.buttonPressed_C7)
-        #self.module.cOut_list[7].toggled.connect(self.module.buttonPressed_C8)
-        #self.module.cOut_list[8].toggled.connect(self.module.buttonPressed_C9)
+        self.module.cOut_list[1].toggled.connect(self.module.buttonPressed_C2)
+        self.module.cOut_list[2].toggled.connect(self.module.buttonPressed_C3)
+        self.module.cOut_list[3].toggled.connect(self.module.buttonPressed_C4)
+        self.module.cOut_list[4].toggled.connect(self.module.buttonPressed_C5)
+        self.module.cOut_list[5].toggled.connect(self.module.buttonPressed_C6)
+        self.module.cOut_list[6].toggled.connect(self.module.buttonPressed_C7)
+        self.module.cOut_list[7].toggled.connect(self.module.buttonPressed_C8)
+        self.module.cOut_list[8].toggled.connect(self.module.buttonPressed_C9)
 
-        #self.module.dOut_list[1].toggled.connect(self.module.buttonPressed_D2)
-        #self.module.dOut_list[2].toggled.connect(self.module.buttonPressed_D3)
-        #self.module.dOut_list[3].toggled.connect(self.module.buttonPressed_D4)
-        #self.module.dOut_list[4].toggled.connect(self.module.buttonPressed_D5)
-        #self.module.dOut_list[5].toggled.connect(self.module.buttonPressed_D6)
-        #self.module.dOut_list[6].toggled.connect(self.module.buttonPressed_D7)
-        #self.module.dOut_list[7].toggled.connect(self.module.buttonPressed_D8)
-        #self.module.dOut_list[8].toggled.connect(self.module.buttonPressed_D9)
+        self.module.dOut_list[1].toggled.connect(self.module.buttonPressed_D2)
+        self.module.dOut_list[2].toggled.connect(self.module.buttonPressed_D3)
+        self.module.dOut_list[3].toggled.connect(self.module.buttonPressed_D4)
+        self.module.dOut_list[4].toggled.connect(self.module.buttonPressed_D5)
+        self.module.dOut_list[5].toggled.connect(self.module.buttonPressed_D6)
+        self.module.dOut_list[6].toggled.connect(self.module.buttonPressed_D7)
+        self.module.dOut_list[7].toggled.connect(self.module.buttonPressed_D8)
+        self.module.dOut_list[8].toggled.connect(self.module.buttonPressed_D9)
 
     def connect_module(self):
         if self.connect_btn.isChecked():
@@ -77,18 +81,40 @@ class Window(QWidget):
             self.test_btn.setEnabled(False)
             self.module.connection.stop()
 
-    def test_relays(self):
-        if self.test_btn.isChecked():
-            self.connect_btn.setEnabled(False)
-            self.outputRelaySet = self.module.dcon.create_request('+', self.address_spinBox.value(), command=self.module.state)
-            self.module.connection.changeRequest(self.outputRelaySet)
-        else:
-            self.module.connection.changeRequest(self.inputStatusRequest)
-            self.connect_btn.setEnabled(True)
-            ...
+    def to_hex_str(self, number):
+        hex_str = hex(number)[2:]
+        hex_number = hex_str.zfill(4).upper()
+        return hex_number
     
+    def startStopRepeating(self, state):
+        if state == True:
+            self.timer.start(100)
+        else:
+            self.timer.stop()
+    
+    def test_relays(self):
+        self.count += 1
+        if self.count > 100000:
+            self.count = 0
+        if self.upper_board.currentText() == 'Inputs' and self.down_board.currentText() == 'Inputs':
+            self.test_btn.setChecked(False)
+            return
+        self.timer.stop()
+
+        commandAF = self.to_hex_str(self.module.stateAF)
+        commandDC = self.to_hex_str(self.module.stateDC)
+
+        if (self.count % 2) == 0:
+            self.outputRelaySet = self.module.dcon.create_request('+', self.address_spinBox.value(), command=commandAF)
+        else:
+            self.outputRelaySet = self.module.dcon.create_request('=', self.address_spinBox.value(), command=commandDC)
+
+        self.module.connection.changeRequest(self.outputRelaySet)
+
+        self.timer.start()
+
     def find_module_address(self):
-        print("find_module")
+        ...
 
     def replacement_upper(self, str):
         if str == 'Outputs':

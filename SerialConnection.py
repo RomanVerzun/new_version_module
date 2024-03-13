@@ -17,8 +17,9 @@ class SerialConnection():
         self.serial.setBaudRate(baud_rate)
 
     def connect(self):
-        if not self.serial.open(QSerialPort.OpenModeFlag.ReadWrite):
-            raise ConnectionError
+        #if not self.serial.open(QSerialPort.OpenModeFlag.ReadWrite):
+        #    raise ConnectionError
+        self.serial.open(QSerialPort.OpenModeFlag.ReadWrite)
     
     def stop(self):
         self.timer.stop()
