@@ -5,6 +5,7 @@ from PyQt6.QtGui     import *
 from module import Module
 from logger import logger
 from time import sleep
+import time
 import sys
 import os
 
@@ -14,6 +15,8 @@ class Window(QWidget):
         super().__init__()
         self.count = 0
         self.timer = QTimer(self)
+        self.timer2 = QTimer(self)
+        self.timer2.timeout.connect(self.find_module)
         self.timer.timeout.connect(self.test_relays)
         self.menu()
         self.module = Module()
@@ -21,7 +24,7 @@ class Window(QWidget):
         self.initUI()
 
         self.port_LineEdit.setText('COM4')
-        self.address_spinBox.setValue(8)
+        self.address_spinBox.setValue(1)
         self.test_btn.setEnabled(False)
 
         self.upper_board.currentTextChanged.connect(self.replacement_upper)
@@ -31,7 +34,8 @@ class Window(QWidget):
         self.connect_btn.clicked.connect(self.connect_module)
 
         self.test_btn.clicked.connect(self.startStopRepeating)
-        self.find_btn.clicked.connect(self.find_module_address)
+        self.find_btn.setCheckable(True)
+        self.find_btn.clicked.connect(self.start_find_module)
 
         self.module.aOut_list[1].toggled.connect(self.module.buttonPressed_A2)
         self.module.aOut_list[2].toggled.connect(self.module.buttonPressed_A3)
@@ -69,6 +73,9 @@ class Window(QWidget):
         self.module.dOut_list[7].toggled.connect(self.module.buttonPressed_D8)
         self.module.dOut_list[8].toggled.connect(self.module.buttonPressed_D9)
 
+    def start_find_module(self):
+        self.timer2.start(80)
+
     def connect_module(self):
         if self.connect_btn.isChecked():
             self.test_btn.setEnabled(True)
@@ -80,6 +87,28 @@ class Window(QWidget):
         else:
             self.test_btn.setEnabled(False)
             self.module.connection.stop()
+    
+    
+    def find_module(self):
+        self.address_spinBox.setValue(self.i)
+        if self.module.connection.flag:
+            self.timer2.stop()
+            self.module.connection.flag = False
+            self.find_btn.setChecked(False)
+            self.connect_btn.setChecked(True)
+            self.test_btn.setChecked(True)
+            self.test_btn.setEnabled(True)
+            self.address_spinBox.setValue(self.address_spinBox.value() - 1)
+            return
+        if self.find_btn.isChecked():
+            self.inputStatusRequest = self.module.dcon.create_request(character='-', module_address=self.address_spinBox.value(), command='')
+            self.module.connection.OpenSerialPort(port=self.port_LineEdit.text(), baud_rate=115200)
+            self.module.connection.connect()
+            self.module.connection.startAutomaticRequests(request=self.inputStatusRequest)
+            self.module.connection.serial.readyRead.connect(self.module.show_inputs)
+        else:
+            self.module.connection.stop()
+        self.i = self.i + 1
 
     def to_hex_str(self, number):
         hex_str = hex(number)[2:]
@@ -88,17 +117,15 @@ class Window(QWidget):
     
     def startStopRepeating(self, state):
         if state == True:
-            self.timer.start(100)
+            self.timer.start(50)
         else:
             self.timer.stop()
+    
     
     def test_relays(self):
         self.count += 1
         if self.count > 100000:
             self.count = 0
-        if self.upper_board.currentText() == 'Inputs' and self.down_board.currentText() == 'Inputs':
-            self.test_btn.setChecked(False)
-            return
         self.timer.stop()
 
         commandAF = self.to_hex_str(self.module.stateAF)
@@ -113,8 +140,6 @@ class Window(QWidget):
 
         self.timer.start()
 
-    def find_module_address(self):
-        ...
 
     def replacement_upper(self, str):
         if str == 'Outputs':
@@ -141,6 +166,7 @@ class Window(QWidget):
         for button in buttons:
             layout.addWidget(button)
         return layout
+    
 
     def menu(self):
         self.upper_board_lb  = QLabel('Верхняя плата')
@@ -156,6 +182,7 @@ class Window(QWidget):
         self.address_spinBox = QSpinBox()
         self.address_spinBox.setMinimum(0)
         self.address_spinBox.setMaximum(255)
+        self.i = self.address_spinBox.minimum()
 
         self.upper_board.addItems(['Inputs', 'Outputs'])
         self.down_board.addItems (['Inputs', 'Outputs'])

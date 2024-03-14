@@ -4,13 +4,14 @@ from PyQt6.QtCore import QTimer, QByteArray
 from logger import logger
 from dcon import Dcon
 
-TIMER_INTERVAL = 100
+TIMER_INTERVAL = 50
 
 class SerialConnection():
     def __init__(self):
         super().__init__()
         self.serial = QSerialPort()
         self.timer = QTimer()
+        self.flag = False
 
     def OpenSerialPort(self, port:str, baud_rate:int=115200):
         self.serial.setPortName(port)
@@ -39,9 +40,9 @@ class SerialConnection():
             self.serial.readyRead.disconnect()
         except TypeError:
             pass
-
-        self.timer.timeout.connect(self.writeData)
-        self.serial.readyRead.connect(self.readData)
+        finally:
+            self.timer.timeout.connect(self.writeData)
+            self.serial.readyRead.connect(self.readData)
     
     def changeRequest(self, request):
         self.dcon = request
@@ -53,12 +54,12 @@ class SerialConnection():
         try:
             self.response = self.serial.readAll()
             self.data = self.response.data().decode()
+            self.flag = True
         except:
-            ...
+            logger.info(f'Error')
     
     def getData(self):
         try:
             return self.data
         except:
-            self.data = '>FFFFFFFFFFFA\r'
-            return self.data
+            ...

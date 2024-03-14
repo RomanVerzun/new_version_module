@@ -1,60 +1,38 @@
-from array import array
-import math
+import sys
+from PyQt5.QtWidgets import QApplication, QWidget, QVBoxLayout, QSpinBox
+from PyQt5.QtCore import QTimer
 
-class Vector2d:
-    __match_args__ = ('x', 'y')
-    __slots__ =('__x', '__y')
-    typecode = 'd'
+class MyWindow(QWidget):
+    def __init__(self):
+        super().__init__()
+        self.initUI()
+        
+    def initUI(self):
+        self.layout = QVBoxLayout()
+        
+        # Создаем QSpinBox
+        self.spinBox = QSpinBox(self)
+        self.spinBox.setMinimum(0) # Минимальное значение
+        self.spinBox.setMaximum(100) # Максимальное значение
+        
+        self.layout.addWidget(self.spinBox)
+        self.setLayout(self.layout)
+        
+        # Настройка QTimer
+        self.timer = QTimer(self)
+        self.timer.timeout.connect(self.updateSpinBox)
+        self.timer.start(50) # Задержка в миллисекундах
+        
+    def updateSpinBox(self):
+        # Увеличиваем значение на 1, сбрасываем, если достигнуто максимальное
+        currentValue = self.spinBox.value()
+        if currentValue < self.spinBox.maximum():
+            self.spinBox.setValue(currentValue + 1)
+        else:
+            self.spinBox.setValue(self.spinBox.minimum())
 
-    def __init__(self, x:int=332131543, y:int=352445243) -> None:
-        self.__x = float(x)
-        self.__y = float(y)
-    
-    def __iter__(self):
-        return (i for i in (self.__x, self.__y))
-    
-    def __repr__(self) -> str:
-        class_name = type(self).__name__
-        self.__x_ = 10
-        return '{}({!r}, {!r})'.format(class_name, *self)
-    
-    def __str__(self) -> str:
-        return str(tuple(self))
-    
-    def __bytes__(self):
-        return (bytes([ord(self.typecode)]) + bytes(array(self.typecode, self)))
-    
-    def __eq__(self, other):
-        return tuple(self) == tuple(other)
-    
-    def __abs__(self):
-        return math.hypot(self.__x, self.__y)
-    
-    def __bool__(self):
-        return bool(abs(self))
-    
-    @property
-    def x(self):
-        return self.__x
-    
-    @property
-    def y(self):
-        return self.__y
-    
-import timeit
-
-setup_code = '''
-from __main__ import Vector2d
-'''
-
-test_code = '''
-for _ in range(100000000):
-    Vector2d()
-'''
-
-# Измеряем время выполнения
-execution_time = timeit.timeit(setup=setup_code, stmt=test_code, number=1)
-import time
-time.sleep(20)
-
-print(f"Время создания 10 миллионов экземпляров: {execution_time} секунд")
+if __name__ == '__main__':
+    app = QApplication(sys.argv)
+    window = MyWindow()
+    window.show()
+    sys.exit(app.exec_())
