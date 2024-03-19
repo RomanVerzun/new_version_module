@@ -24,7 +24,7 @@ class Window(QWidget):
         self.initUI()
 
         self.port_LineEdit.setText('COM4')
-        self.address_spinBox.setValue(1)
+        self.address_spinBox.setValue(0)
         self.test_btn.setEnabled(False)
 
         self.upper_board.currentTextChanged.connect(self.replacement_upper)
@@ -73,8 +73,17 @@ class Window(QWidget):
         self.module.dOut_list[7].toggled.connect(self.module.buttonPressed_D8)
         self.module.dOut_list[8].toggled.connect(self.module.buttonPressed_D9)
 
+        self.all_relays = list()
+        self.all_relays.extend(self.module.aOut_list)
+        self.all_relays.extend(self.module.cOut_list)
+        self.all_relays.extend(self.module.dOut_list)
+        self.all_relays.extend(self.module.fOut_list)
+        for i in self.all_relays:
+            i.setEnabled(False)
+
     def start_find_module(self):
-        self.timer2.start(80)
+        self.timer2.setInterval(150)
+        self.timer2.start()
 
     def connect_module(self):
         if self.connect_btn.isChecked():
@@ -90,22 +99,32 @@ class Window(QWidget):
     
     
     def find_module(self):
+        logger.info(f'{self.i}')
         self.address_spinBox.setValue(self.i)
+        if self.address_spinBox.value() >= 255:
+            self.timer2.stop()
+            QMessageBox.information(self, "Информация", 'Модуль не обнаружен')
+            self.i = 1
+            self.find_btn.setChecked(False)
+            self.i = 1
+            self.address_spinBox.setValue(1)
         if self.module.connection.flag:
             self.timer2.stop()
             self.module.connection.flag = False
             self.find_btn.setChecked(False)
             self.connect_btn.setChecked(True)
-            self.test_btn.setChecked(True)
             self.test_btn.setEnabled(True)
             self.address_spinBox.setValue(self.address_spinBox.value() - 1)
             return
-        if self.find_btn.isChecked():
+        elif self.find_btn.isChecked():
             self.inputStatusRequest = self.module.dcon.create_request(character='-', module_address=self.address_spinBox.value(), command='')
             self.module.connection.OpenSerialPort(port=self.port_LineEdit.text(), baud_rate=115200)
             self.module.connection.connect()
+            logger.info(f'{self.inputStatusRequest}')
             self.module.connection.startAutomaticRequests(request=self.inputStatusRequest)
             self.module.connection.serial.readyRead.connect(self.module.show_inputs)
+        elif not self.find_btn.isChecked():
+            self.timer2.stop()
         else:
             self.module.connection.stop()
         self.i = self.i + 1
@@ -119,27 +138,37 @@ class Window(QWidget):
         if state == True:
             self.timer.start(50)
         else:
-            self.timer.stop()
+            for i in self.all_relays:
+                i.setChecked(False)
+                i.setEnabled(False)
+            QTimer.singleShot(500, self.stop_test)
+            if (self.count %2) == 0:
+                self.outputRelaySet = self.module.dcon.create_request('+', self.address_spinBox.value(), command='FFFF')
+            else:
+                self.outputRelaySet = self.module.dcon.create_request('=', self.address_spinBox.value(), command='FFFF')
+            self.module.connection.changeRequest(self.outputRelaySet)
     
+    def stop_test(self):
+        self.connect_btn.setEnabled(True)
+        self.timer.stop()
     
     def test_relays(self):
+        self.connect_btn.setEnabled(False)
+        for i in self.all_relays:
+            i.setEnabled(True)
         self.count += 1
-        if self.count > 100000:
+        if self.count > 100:
             self.count = 0
-        self.timer.stop()
 
-        commandAF = self.to_hex_str(self.module.stateAF)
-        commandDC = self.to_hex_str(self.module.stateDC)
+        self.commandAF = self.to_hex_str(self.module.stateAF)
+        self.commandDC = self.to_hex_str(self.module.stateDC)
+
 
         if (self.count % 2) == 0:
-            self.outputRelaySet = self.module.dcon.create_request('+', self.address_spinBox.value(), command=commandAF)
+            self.outputRelaySet = self.module.dcon.create_request('+', self.address_spinBox.value(), command=self.commandAF)
         else:
-            self.outputRelaySet = self.module.dcon.create_request('=', self.address_spinBox.value(), command=commandDC)
-
+            self.outputRelaySet = self.module.dcon.create_request('=', self.address_spinBox.value(), command=self.commandDC)
         self.module.connection.changeRequest(self.outputRelaySet)
-
-        self.timer.start()
-
 
     def replacement_upper(self, str):
         if str == 'Outputs':
@@ -166,7 +195,6 @@ class Window(QWidget):
         for button in buttons:
             layout.addWidget(button)
         return layout
-    
 
     def menu(self):
         self.upper_board_lb  = QLabel('Верхняя плата')
@@ -180,7 +208,7 @@ class Window(QWidget):
         self.down_board      = QComboBox()
         self.port_LineEdit   = QLineEdit('')
         self.address_spinBox = QSpinBox()
-        self.address_spinBox.setMinimum(0)
+        self.address_spinBox.setMinimum(1)
         self.address_spinBox.setMaximum(255)
         self.i = self.address_spinBox.minimum()
 

@@ -23,9 +23,12 @@ class SerialConnection():
         self.serial.open(QSerialPort.OpenModeFlag.ReadWrite)
     
     def stop(self):
-        self.timer.stop()
-        self.serial.readyRead.disconnect()
-        self.serial.close()
+        try:
+            self.timer.stop()
+            self.serial.readyRead.disconnect()
+            self.serial.close()
+        except:
+            ...
 
     def startAutomaticRequests(self, request):
         self.timer.start(TIMER_INTERVAL) 
