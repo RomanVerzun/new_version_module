@@ -76,6 +76,8 @@ class Window(QWidget):
         self.module.dOut_list[6].toggled.connect(self.module.buttonPressed_D7)
         self.module.dOut_list[7].toggled.connect(self.module.buttonPressed_D8)
         self.module.dOut_list[8].toggled.connect(self.module.buttonPressed_D9)
+        self.AF = self.module.aOut_list[1:-1] + self.module.fOut_list[1:-1]
+        self.CD = self.module.cOut_list[1:-1] + self.module.dOut_list[1:-1]
 
 
         for i in chain(self.module.aOut_list, self.module.cOut_list, self.module.dOut_list, self.module.fOut_list):
@@ -178,13 +180,13 @@ class Window(QWidget):
         try:
             next(self.step)
         except:
-            for i, j in zip(self.module.aOut_list[1:-1], self.module.fOut_list[1:-1]):
+            for i, j in zip(self.AF, self.CD):
                 i.setChecked(False)
                 j.setChecked(False)
                 self.step = self.button()
     
     def button(self):
-        for i, j in zip(self.module.aOut_list[1:-1], self.module.fOut_list[1:-1]):
+        for i, j in zip(self.AF, self.CD):
             i.setChecked(True)
             j.setChecked(True)
             yield
