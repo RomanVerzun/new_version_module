@@ -2,6 +2,7 @@ from PyQt6.QtWidgets import *
 from PyQt6.QtCore    import *
 from PyQt6.QtGui     import *
 
+from itertools import chain
 from module import Module
 from logger import logger
 from time import sleep
@@ -18,6 +19,9 @@ class Window(QWidget):
         self.timer2 = QTimer(self)
         self.timer2.timeout.connect(self.find_module)
         self.timer.timeout.connect(self.test_relays)
+        self.timeToDance = QTimer()
+        self.timeToDance.setInterval(300)
+        self.timeToDance.timeout.connect(self.dance_button)
         self.menu()
         self.module = Module()
         self.main()
@@ -73,12 +77,8 @@ class Window(QWidget):
         self.module.dOut_list[7].toggled.connect(self.module.buttonPressed_D8)
         self.module.dOut_list[8].toggled.connect(self.module.buttonPressed_D9)
 
-        self.all_relays = list()
-        self.all_relays.extend(self.module.aOut_list)
-        self.all_relays.extend(self.module.cOut_list)
-        self.all_relays.extend(self.module.dOut_list)
-        self.all_relays.extend(self.module.fOut_list)
-        for i in self.all_relays:
+
+        for i in chain(self.module.aOut_list, self.module.cOut_list, self.module.dOut_list, self.module.fOut_list):
             i.setEnabled(False)
 
     def start_find_module(self):
@@ -96,10 +96,11 @@ class Window(QWidget):
         else:
             self.test_btn.setEnabled(False)
             self.module.connection.stop()
+            self.module.flagCheckedInput = [False] * 42
+            self.module.show_inputs()
     
     
     def find_module(self):
-        logger.info(f'{self.i}')
         self.address_spinBox.setValue(self.i)
         if self.address_spinBox.value() >= 255:
             self.timer2.stop()
@@ -120,7 +121,6 @@ class Window(QWidget):
             self.inputStatusRequest = self.module.dcon.create_request(character='-', module_address=self.address_spinBox.value(), command='')
             self.module.connection.OpenSerialPort(port=self.port_LineEdit.text(), baud_rate=115200)
             self.module.connection.connect()
-            logger.info(f'{self.inputStatusRequest}')
             self.module.connection.startAutomaticRequests(request=self.inputStatusRequest)
             self.module.connection.serial.readyRead.connect(self.module.show_inputs)
         elif not self.find_btn.isChecked():
@@ -137,8 +137,10 @@ class Window(QWidget):
     def startStopRepeating(self, state):
         if state == True:
             self.timer.start(50)
+            self.timeToDance.start()
         else:
-            for i in self.all_relays:
+            self.timeToDance.stop()
+            for i in chain(self.module.aOut_list, self.module.cOut_list, self.module.dOut_list, self.module.fOut_list):
                 i.setChecked(False)
                 i.setEnabled(False)
             QTimer.singleShot(500, self.stop_test)
@@ -147,6 +149,7 @@ class Window(QWidget):
             else:
                 self.outputRelaySet = self.module.dcon.create_request('=', self.address_spinBox.value(), command='FFFF')
             self.module.connection.changeRequest(self.outputRelaySet)
+
     
     def stop_test(self):
         self.connect_btn.setEnabled(True)
@@ -154,11 +157,12 @@ class Window(QWidget):
     
     def test_relays(self):
         self.connect_btn.setEnabled(False)
-        for i in self.all_relays:
+        for i in chain(self.module.aOut_list, self.module.cOut_list, self.module.dOut_list, self.module.fOut_list):
             i.setEnabled(True)
         self.count += 1
         if self.count > 100:
             self.count = 0
+        
 
         self.commandAF = self.to_hex_str(self.module.stateAF)
         self.commandDC = self.to_hex_str(self.module.stateDC)
@@ -169,6 +173,22 @@ class Window(QWidget):
         else:
             self.outputRelaySet = self.module.dcon.create_request('=', self.address_spinBox.value(), command=self.commandDC)
         self.module.connection.changeRequest(self.outputRelaySet)
+    
+    def dance_button(self):
+        try:
+            next(self.step)
+        except:
+            for i, j in zip(self.module.aOut_list[1:-1], self.module.fOut_list[1:-1]):
+                i.setChecked(False)
+                j.setChecked(False)
+                self.step = self.button()
+    
+    def button(self):
+        for i, j in zip(self.module.aOut_list[1:-1], self.module.fOut_list[1:-1]):
+            i.setChecked(True)
+            j.setChecked(True)
+            yield
+                
 
     def replacement_upper(self, str):
         if str == 'Outputs':

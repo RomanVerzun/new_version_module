@@ -25,6 +25,7 @@ class Module:
 
         self.dcon       = Dcon()
         self.connection = SerialConnection()
+        self.flagCheckedInput = [False] * 42
 
     def connect(self, port:str, character, module_address, command, baud_rate=115200):
         req = self.dcon.create_request(character=self.character, module_address=self.module_address, command=self.command)
@@ -38,11 +39,19 @@ class Module:
         binary_data = ''.join(format(int(c, 16), '04b') for c in data)
 
         activeInput     = f'color: "black"; background-color: red'
-        inactiveInput   = f'color: "black"; background-color: green'
+        inactiveInput   = f'color: "black"; background-color: gray'
+        inputchecked    = f'color: "black"; background-color: green'
 
         def input_style(binary_index, list_index, inp_list):
             try:
-                style = activeInput if binary_data[binary_index] == '0' else inactiveInput
+                if binary_data[binary_index] == '0':
+                    style = activeInput
+                    self.flagCheckedInput[binary_index] = True
+                elif binary_data[binary_index] == '1' and self.flagCheckedInput[binary_index]:
+                    style = inputchecked
+                else:
+                    style = inactiveInput
+                
                 inp_list[list_index].setStyleSheet(style)
             except:
                 pass
