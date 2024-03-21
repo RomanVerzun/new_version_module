@@ -1,13 +1,9 @@
-CHUNKSIZE = 8192
+from functools import partial
 
-def reader(s):
-    while True:
-        data = s.recv(CHUNKSIZE)
-        if data == b'':
-            break
-        process_data(data)
+RECORD_SIZE = 32
 
-
-def reader(s):
-    for chunk in iter(lambda: s.recv(CHUNKSIZE), b''):
-        process_data(data)
+with open('tmp/download.png', 'rb') as f:
+    records = iter(partial(f.read, RECORD_SIZE), b'')
+    for r in records:
+        print(r)
+        ...

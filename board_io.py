@@ -61,7 +61,7 @@ class Board_IO:
 
 class Inputs(Board_IO):
     def __init__(self, terminal_block1: str, terminal_block2: str):
-        self.bg = 'green'
+        self.bg = 'grey'
         super().__init__(terminal_block1, terminal_block2, ioStatus='I')
         self.disable_button()
     
@@ -79,6 +79,6 @@ class Outputs(Board_IO):
 
 class Processor(Board_IO):
     def __init__(self):
-        self.bg = 'green'
+        self.bg = 'grey'
         super().__init__(terminal_block1='B', terminal_block2='E', ioStatus='I')
         self.disable_button()
