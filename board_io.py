@@ -23,7 +23,7 @@ class Board_IO:
         return self.all_terminals
 
     def create_io(self, terminal_block):
-        buttons = [self.create_button(f'{self.ioStatus}{terminal_block}{i:02}', i) for i in self.SIZE]
+        buttons = [self.create_button(f'{self.ioStatus}{terminal_block}{i}', i) for i in self.SIZE]
         return buttons
 
     def create_button(self, text, index):
