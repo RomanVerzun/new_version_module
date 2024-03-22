@@ -10,8 +10,8 @@ import relays  as rel
 
 class Module:
     def __init__(self):
-        self.stateAF = 0xffff
-        self.stateDC = 0xffff
+        self.stateAF = 0x0000
+        self.stateDC = 0x0000
         # upper board input
         self.uBoardInp  = Inputs('A', 'F')
         self.uBoardOut  = Outputs('A', 'F')
@@ -79,9 +79,9 @@ class Module:
     
     def updateStateAF(self, relay, state):
         if state:
-            self.stateAF = self.stateAF & relay
+            self.stateAF = self.stateAF | relay
         else:
-            self.stateAF = self.stateAF | (~relay & rel.MASK_R)
+            self.stateAF = self.stateAF & (~relay & rel.MASK_R)
         return self.stateAF
 
     def buttonPressed_A2(self, state):
@@ -135,9 +135,9 @@ class Module:
 
     def updateStateDC(self, relay, state):
         if state:
-            self.stateDC = self.stateDC & relay
+            self.stateDC = self.stateDC | relay
         else:
-            self.stateDC = self.stateDC | (~relay & rel.MASK_R)
+            self.stateDC = self.stateDC & (~relay & rel.MASK_R)
         return self.stateDC
 
     def buttonPressed_C2(self, state):
