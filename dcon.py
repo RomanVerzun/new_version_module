@@ -23,6 +23,10 @@ class Dcon():
         x = sum(ord(char) for char in data)
     
     def parsedResponse(self, response):
-        data     = response[1:-3]
-        checksum = response[-3:-1]
-        return data, checksum
+        try:
+            data     = response[1:-3]
+            checksum = response[-3:-1]
+            return data, checksum
+        except:
+            return None, None
+            ...

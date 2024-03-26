@@ -10,8 +10,8 @@ import relays  as rel
 
 class Module:
     def __init__(self):
-        self.stateAF = 0x0000
-        self.stateDC = 0x0000
+        self.stateAF = rel.MASK_R
+        self.stateDC = rel.MASK_R
         # upper board input
         self.uBoardInp  = Inputs('A', 'F')
         self.uBoardOut  = Outputs('A', 'F')

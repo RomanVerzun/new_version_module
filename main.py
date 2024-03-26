@@ -19,11 +19,14 @@ class Window(QWidget):
         self.timer2 = QTimer(self)
         self.timer2.timeout.connect(self.find_module)
         self.timer.timeout.connect(self.test_relays)
+        self.timer3 = QTimer(self)
+        self.timer3.setInterval(200)
+        self.timer3.timeout.connect(self.label_update)
         self.timeToDance = QTimer()
         self.timeToDance.setInterval(300)
         self.timeToDance.timeout.connect(self.dance_button)
-        self.menu()
         self.module = Module()
+        self.menu()
         self.main()
         self.initUI()
 
@@ -84,7 +87,7 @@ class Window(QWidget):
             i.setEnabled(False)
 
     def start_find_module(self):
-        self.timer2.setInterval(150)
+        self.timer2.setInterval(200)
         self.timer2.start()
 
     def connect_module(self):
@@ -95,11 +98,24 @@ class Window(QWidget):
             self.module.connection.connect()
             self.module.connection.startAutomaticRequests(request=self.inputStatusRequest)
             self.module.connection.serial.readyRead.connect(self.module.show_inputs)
+            self.timer3.start()
         else:
             self.test_btn.setEnabled(False)
             self.module.connection.stop()
             self.module.flagCheckedInput = [False] * 42
             self.module.show_inputs()
+            self.module.connection.flag = False
+            self.timer3.stop()
+    
+
+    def label_update(self):
+        try:
+            self.connection_quality.setText(f'Связь: {self.module.connection.count_response / (self.module.connection.count_request + 1) * 100:.2f}%')
+            logger.info(f'request {self.module.connection.count_request}')
+            logger.info(f'response {self.module.connection.count_response}')
+            logger.info('--------------------------')
+        except:
+            self.connection_quality.setText(f'Связь: 0')
     
     
     def find_module(self):
@@ -138,7 +154,7 @@ class Window(QWidget):
     
     def startStopRepeating(self, state):
         if state == True:
-            self.timer.start(50)
+            self.timer.start(200)
             self.timeToDance.start()
         else:
             self.timeToDance.stop()
@@ -190,7 +206,6 @@ class Window(QWidget):
             i.setChecked(True)
             j.setChecked(True)
             yield
-                
 
     def replacement_upper(self, str):
         if str == 'Outputs':
@@ -223,13 +238,14 @@ class Window(QWidget):
         self.down_board_lb   = QLabel('Нижняя плата')
         self.port_lb         = QLabel('Порт')
         self.address_lb      = QLabel('Адрес')
-        self.connect_btn     = QPushButton('Связь')
+        self.connect_btn     = QPushButton('Соединение')
         self.find_btn        = QPushButton('Найти')
         self.test_btn        = QPushButton('Тестирование')
         self.upper_board     = QComboBox()
         self.down_board      = QComboBox()
         self.port_LineEdit   = QLineEdit('')
         self.address_spinBox = QSpinBox()
+        self.connection_quality = QLabel(f'Связь: 0')
         self.address_spinBox.setMinimum(1)
         self.address_spinBox.setMaximum(255)
         self.i = self.address_spinBox.minimum()
@@ -251,6 +267,7 @@ class Window(QWidget):
         self.menu_layout.addWidget(self.connect_btn)
         self.menu_layout.addWidget(self.find_btn)
         self.menu_layout.addWidget(self.test_btn)
+        self.menu_layout.addWidget(self.connection_quality)
 
     def initUI(self):
         self.monitor = QHBoxLayout()

@@ -72,10 +72,6 @@ class Outputs(Board_IO):
         super().__init__(terminal_block1, terminal_block2, ioStatus='R')
         self.enable_button()
     
-    #def test_relays(self):
-     #   ...
-        
-
 
 class Processor(Board_IO):
     def __init__(self):
