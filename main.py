@@ -234,8 +234,8 @@ class Window(QWidget):
         return layout
 
     def menu(self):
-        self.upper_board_lb  = QLabel('Верхняя плата')
-        self.down_board_lb   = QLabel('Нижняя плата')
+        self.down_board_lb  = QLabel('Нижняя плата')
+        self.upper_board_lb   = QLabel('Верхняя плата')
         self.port_lb         = QLabel('Порт')
         self.address_lb      = QLabel('Адрес')
         self.connect_btn     = QPushButton('Соединение')
@@ -256,9 +256,9 @@ class Window(QWidget):
         self.test_btn.setCheckable(True)
 
         self.menu_layout = QVBoxLayout()
-        self.menu_layout.addWidget(self.upper_board_lb)
-        self.menu_layout.addWidget(self.upper_board)
         self.menu_layout.addWidget(self.down_board_lb)
+        self.menu_layout.addWidget(self.upper_board)
+        self.menu_layout.addWidget(self.upper_board_lb)
         self.menu_layout.addWidget(self.down_board)
         self.menu_layout.addWidget(self.port_lb)
         self.menu_layout.addWidget(self.port_LineEdit)

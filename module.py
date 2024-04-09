@@ -36,7 +36,10 @@ class Module:
         response = self.connection.getData()
         data, checksum = self.dcon.parsedResponse(response)
         checksumVerificationStatus = self.dcon.checksum_verification(response)
-        binary_data = ''.join(format(int(c, 16), '04b') for c in data)
+        try:
+            binary_data = ''.join(format(int(c, 16), '04b') for c in data)
+        except:
+            pass
 
         activeInput     = f'color: "black"; background-color: red'
         inactiveInput   = f'color: "black"; background-color: gray'

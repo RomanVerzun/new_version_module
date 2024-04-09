@@ -18,9 +18,12 @@ class Dcon():
         return checksum_hex
     
     def checksum_verification(self, response):
-        data     = response[1:-3]
-        checksum = response[-3:-1]
-        x = sum(ord(char) for char in data)
+        try:
+            data     = response[1:-3]
+            checksum = response[-3:-1]
+            x = sum(ord(char) for char in data)
+        except:
+            pass
     
     def parsedResponse(self, response):
         try:

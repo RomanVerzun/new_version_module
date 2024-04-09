@@ -1,0 +1,21 @@
+body {
+    padding: 50px;
+}
+
+.box {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    justify-content: center;
+}
+
+.svg {
+    width: 400px;
+    height: 300px;
+    border: 1px solid #000;
+    margin-bottom: 50px;
+}
+
+.text {
+    font-size: 240px;
+    fill: #000000;
+}
