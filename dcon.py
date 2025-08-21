@@ -124,10 +124,16 @@ class Dcon:
             Tuple of (data, checksum) or (None, None) if parsing fails
         """
         try:
-            if not response or len(response) < 4:
+            if not response or len(response) < 5:  # Minimum: >XYnn\r
                 logger.warning(f"Invalid response format: '{response}'")
                 return None, None
             
+            # Validate basic structure - should start with '>' and end with '\r'
+            if not response.startswith('>') or not response.endswith('\r'):
+                logger.warning(f"Invalid response structure: '{response}'")
+                return None, None
+            
+            # Expected format: >DATA12\r where DATA is actual data and 12 is checksum
             data = response[1:-3]
             checksum = response[-3:-1]
             

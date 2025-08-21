@@ -2,12 +2,18 @@
 
 import asyncio
 import functools
-import aiohttp
 import time
 import logging
 from typing import Callable, Any, Optional, Dict, List
 from contextlib import contextmanager
-from aiohttp import ClientSession
+
+try:
+    import aiohttp
+    from aiohttp import ClientSession
+    AIOHTTP_AVAILABLE = True
+except ImportError:
+    AIOHTTP_AVAILABLE = False
+    ClientSession = None
 
 
 logger = logging.getLogger(__name__)
@@ -113,6 +119,9 @@ def async_timed():
 
 async def fetch_status(session: ClientSession, url: str, delay_time: int = 0) -> int:
     """Fetch HTTP status with optional delay."""
+    if not AIOHTTP_AVAILABLE:
+        raise ImportError("aiohttp is required for fetch_status")
+    
     await asyncio.sleep(delay_time)
     async with session.get(url) as result:
         return result.status
