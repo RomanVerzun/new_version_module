@@ -93,10 +93,16 @@ class Window(QWidget):
     def connect_module(self):
         if self.connect_btn.isChecked():
             self.test_btn.setEnabled(True)
-            self.inputStatusRequest = self.module.dcon.create_request(character='-', module_address=self.address_spinBox.value(), command='')
-            self.module.connection.OpenSerialPort(port=self.port_LineEdit.text(), baud_rate=115200)
+            self.input_status_request = self.module.dcon.create_request(
+                character='-', module_address=self.address_spinBox.value(), command=''
+            )
+            self.module.connection.open_serial_port(
+                port=self.port_LineEdit.text(), baud_rate=115200
+            )
             self.module.connection.connect()
-            self.module.connection.startAutomaticRequests(request=self.inputStatusRequest)
+            self.module.connection.start_automatic_requests(
+                request=self.input_status_request
+            )
             self.module.connection.serial.readyRead.connect(self.module.show_inputs)
             self.timer3.start()
         else:
@@ -136,10 +142,16 @@ class Window(QWidget):
             self.address_spinBox.setValue(self.address_spinBox.value() - 1)
             return
         elif self.find_btn.isChecked():
-            self.inputStatusRequest = self.module.dcon.create_request(character='-', module_address=self.address_spinBox.value(), command='')
-            self.module.connection.OpenSerialPort(port=self.port_LineEdit.text(), baud_rate=115200)
+            self.input_status_request = self.module.dcon.create_request(
+                character='-', module_address=self.address_spinBox.value(), command=''
+            )
+            self.module.connection.open_serial_port(
+                port=self.port_LineEdit.text(), baud_rate=115200
+            )
             self.module.connection.connect()
-            self.module.connection.startAutomaticRequests(request=self.inputStatusRequest)
+            self.module.connection.start_automatic_requests(
+                request=self.input_status_request
+            )
             self.module.connection.serial.readyRead.connect(self.module.show_inputs)
         elif not self.find_btn.isChecked():
             self.timer2.stop()
@@ -166,7 +178,7 @@ class Window(QWidget):
                 self.outputRelaySet = self.module.dcon.create_request('+', self.address_spinBox.value(), command='FFFF')
             else:
                 self.outputRelaySet = self.module.dcon.create_request('=', self.address_spinBox.value(), command='FFFF')
-            self.module.connection.changeRequest(self.outputRelaySet)
+            self.module.connection.change_request(self.outputRelaySet)
 
     
     def stop_test(self):
@@ -190,7 +202,7 @@ class Window(QWidget):
             self.outputRelaySet = self.module.dcon.create_request('+', self.address_spinBox.value(), command=self.commandAF)
         else:
             self.outputRelaySet = self.module.dcon.create_request('=', self.address_spinBox.value(), command=self.commandDC)
-        self.module.connection.changeRequest(self.outputRelaySet)
+        self.module.connection.change_request(self.outputRelaySet)
     
     def dance_button(self):
         try:

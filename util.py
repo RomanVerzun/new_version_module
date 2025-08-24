@@ -1,33 +1,49 @@
+"""Asynchronous helpers and decorators."""
+
 import asyncio
 import functools
-import aiohttp
 import time
-from typing import Callable, Any
+from typing import Any, Callable
+
 from aiohttp import ClientSession
 
-async def delay(delay_seconds: int) -> int:
-    print(f' засыпаю на {delay_seconds} секунд')
-    await asyncio.sleep(delay_seconds)
-    print(f'сон в течении {delay_seconds} секунд закончился')
-    return delay_seconds
+SLEEP_MSG = "засыпаю на {seconds} секунд"
+SLEEP_DONE_MSG = "сон в течении {seconds} секунд закончился"
+RUNNING_MSG = "Выполняется {func} с аргументами {args} {kwargs}"
+FINISHED_MSG = "{func} завершилась за {total:.4f} секунды"
 
-def async_timed():
-    def wrapper(func: Callable) -> Callable:
+
+async def delay(seconds: int) -> int:
+    """Pause execution for a given number of seconds."""
+    print(SLEEP_MSG.format(seconds=seconds))
+    await asyncio.sleep(seconds)
+    print(SLEEP_DONE_MSG.format(seconds=seconds))
+    return seconds
+
+
+def async_timed() -> Callable:
+    """Decorator for timing asynchronous functions."""
+
+    def decorator(func: Callable) -> Callable:
         @functools.wraps(func)
         async def wrapped(*args, **kwargs) -> Any:
-            print(f'Выполняется {func} с аргументами {args} {kwargs}')
-            start = time.time()
-            
+            print(RUNNING_MSG.format(func=func, args=args, kwargs=kwargs))
+            start_time = time.time()
             try:
                 return await func(*args, **kwargs)
             finally:
-                end = time.time()
-                total = end - start
-                print(f'{func} завершилась за {total:.4f} секунды')
-        return wrapped
-    return wrapper
+                elapsed = time.time() - start_time
+                print(FINISHED_MSG.format(func=func, total=elapsed))
 
-async def fetch_status(session: ClientSession, url: str, delay: int = 0) -> int:
+        return wrapped
+
+    return decorator
+
+
+async def fetch_status(
+    session: ClientSession, url: str, delay: int = 0
+) -> int:
+    """Fetch the HTTP status code for a URL after an optional delay."""
     await asyncio.sleep(delay)
     async with session.get(url) as result:
         return result.status
