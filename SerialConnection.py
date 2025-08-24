@@ -1,39 +1,51 @@
-from PyQt6.QtWidgets import QApplication, QMainWindow
-from PyQt6.QtSerialPort import QSerialPort, QSerialPortInfo
-from PyQt6.QtCore import QTimer, QByteArray
+"""Utilities for handling serial communication with the module."""
+
+from PyQt6.QtCore import QTimer
+from PyQt6.QtSerialPort import QSerialPort
+
 from logger import logger
-from dcon import Dcon
 
-TIMER_INTERVAL = 100
+# Default configuration values
+DEFAULT_TIMER_INTERVAL = 100
+DEFAULT_BAUD_RATE = 115_200
 
-class SerialConnection():
-    def __init__(self):
-        super().__init__()
-        self.count_request = 0
-        self.count_response = 0
+
+class SerialConnection:
+    """Encapsulate work with a serial port and periodic requests."""
+
+    def __init__(self) -> None:
+        self.request_count = 0
+        self.response_count = 0
         self.serial = QSerialPort()
         self.timer = QTimer()
         self.flag = False
+        self.dcon = ""
+        self.response = bytearray()
+        self.data = ""
 
-    def OpenSerialPort(self, port:str, baud_rate:int=115200):
+    def open_serial_port(
+        self, port: str, baud_rate: int = DEFAULT_BAUD_RATE
+    ) -> None:
+        """Configure the serial port."""
         self.serial.setPortName(port)
         self.serial.setBaudRate(baud_rate)
 
-    def connect(self):
-        #if not self.serial.open(QSerialPort.OpenModeFlag.ReadWrite):
-        #    raise ConnectionError
+    def connect(self) -> None:
+        """Open the serial port for read/write communication."""
         self.serial.open(QSerialPort.OpenModeFlag.ReadWrite)
-    
-    def stop(self):
+
+    def stop(self) -> None:
+        """Stop communication and release the serial port."""
         try:
             self.timer.stop()
             self.serial.readyRead.disconnect()
             self.serial.close()
-        except:
-            ...
+        except Exception:
+            pass
 
-    def startAutomaticRequests(self, request):
-        self.timer.start(TIMER_INTERVAL) 
+    def start_automatic_requests(self, request: str) -> None:
+        """Begin sending periodic requests."""
+        self.timer.start(DEFAULT_TIMER_INTERVAL)
         self.dcon = request
 
         try:
@@ -45,36 +57,37 @@ class SerialConnection():
             self.serial.readyRead.disconnect()
         except TypeError:
             pass
-        finally:
-            self.timer.timeout.connect(self.writeData)
-            self.serial.readyRead.connect(self.readData)
-    
-    def changeRequest(self, request):
+
+        self.timer.timeout.connect(self.write_data)
+        self.serial.readyRead.connect(self.read_data)
+
+    def change_request(self, request: str) -> None:
+        """Replace the current request."""
         self.dcon = request
 
-    def writeData(self):
+    def write_data(self) -> None:
+        """Send data to the serial port."""
         self.serial.write(self.dcon.encode())
-        if self.flag == True:
-            self.count_request += 1
-            logger.info(f'request {self.dcon}')
+        if self.flag:
+            self.request_count += 1
+            logger.info("request %s", self.dcon)
         else:
-            self.count_request = 0
-            self.count_response = 0
+            self.request_count = 0
+            self.response_count = 0
 
-    def readData(self):
+    def read_data(self) -> None:
+        """Read data from the serial port."""
         try:
             self.response = self.serial.readAll()
             self.data = self.response.data().decode()
             self.flag = True
-            if self.flag == True:
-                self.count_response += 1
-                logger.info(f'{self.data}')
-                logger.info(f'{self.count_response}')
-        except:
-            logger.info(f'Error')
-    
-    def getData(self):
-        try:
-            return self.data
-        except:
-            ...
+            if self.flag:
+                self.response_count += 1
+                logger.info("%s", self.data)
+                logger.info("%s", self.response_count)
+        except Exception:
+            logger.info("Error")
+
+    def get_data(self) -> str:
+        """Return the last received data."""
+        return self.data

@@ -28,12 +28,16 @@ class Module:
         self.flagCheckedInput = [False] * 42
 
     def connect(self, port:str, character, module_address, command, baud_rate=115200):
-        req = self.dcon.create_request(character=self.character, module_address=self.module_address, command=self.command)
-        self.connection.OpenSerialPort(port=port, baud_rate=baud_rate)
-        self.connection.startAutomaticRequests(req)
+        req = self.dcon.create_request(
+            character=self.character,
+            module_address=self.module_address,
+            command=self.command,
+        )
+        self.connection.open_serial_port(port=port, baud_rate=baud_rate)
+        self.connection.start_automatic_requests(req)
     
     def show_inputs(self):
-        response = self.connection.getData()
+        response = self.connection.get_data()
         data, checksum = self.dcon.parsedResponse(response)
         checksumVerificationStatus = self.dcon.checksum_verification(response)
         try:
