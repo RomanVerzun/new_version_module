@@ -12,30 +12,47 @@ import os
 
 
 class Window(QWidget):
+    """Main application window."""
+
     def __init__(self):
         super().__init__()
         self.count = 0
+        self.module = Module()
+
+        self._setup_timers()
+        self._build_ui()
+        self._setup_connections()
+
+    def _setup_timers(self):
+        """Initialize application timers."""
         self.timer = QTimer(self)
-        self.timer2 = QTimer(self)
-        self.timer2.timeout.connect(self.find_module)
         self.timer.timeout.connect(self.test_relays)
+
+        self.timer2 = QTimer(self)
+        self.timer2.setInterval(200)
+        self.timer2.timeout.connect(self.find_module)
+
         self.timer3 = QTimer(self)
         self.timer3.setInterval(200)
         self.timer3.timeout.connect(self.label_update)
-        self.timeToDance = QTimer()
+
+        self.timeToDance = QTimer(self)
         self.timeToDance.setInterval(300)
         self.timeToDance.timeout.connect(self.dance_button)
-        self.module = Module()
-        self.menu()
-        self.main()
-        self.initUI()
 
+    def _build_ui(self):
+        """Create and arrange all widgets."""
+        self._build_menu()
+        self._build_main_layout()
+        self._apply_layout()
         self.port_LineEdit.setText('COM4')
         self.address_spinBox.setValue(0)
         self.test_btn.setEnabled(False)
 
+    def _setup_connections(self):
+        """Connect signals from widgets and module."""
         self.upper_board.currentTextChanged.connect(self.replacement_upper)
-        self.down_board.currentTextChanged. connect(self.replacement_down)
+        self.down_board.currentTextChanged.connect(self.replacement_down)
 
         self.connect_btn.setCheckable(True)
         self.connect_btn.clicked.connect(self.connect_module)
@@ -44,47 +61,35 @@ class Window(QWidget):
         self.find_btn.setCheckable(True)
         self.find_btn.clicked.connect(self.start_find_module)
 
-        self.module.aOut_list[1].toggled.connect(self.module.buttonPressed_A2)
-        self.module.aOut_list[2].toggled.connect(self.module.buttonPressed_A3)
-        self.module.aOut_list[3].toggled.connect(self.module.buttonPressed_A4)
-        self.module.aOut_list[4].toggled.connect(self.module.buttonPressed_A5)
-        self.module.aOut_list[5].toggled.connect(self.module.buttonPressed_A6)
-        self.module.aOut_list[6].toggled.connect(self.module.buttonPressed_A7)
-        self.module.aOut_list[7].toggled.connect(self.module.buttonPressed_A8)
-        self.module.aOut_list[8].toggled.connect(self.module.buttonPressed_A9)
+        self._connect_module_output_signals()
 
-        self.module.fOut_list[1].toggled.connect(self.module.buttonPressed_F2)
-        self.module.fOut_list[2].toggled.connect(self.module.buttonPressed_F3)
-        self.module.fOut_list[3].toggled.connect(self.module.buttonPressed_F4)
-        self.module.fOut_list[4].toggled.connect(self.module.buttonPressed_F5)
-        self.module.fOut_list[5].toggled.connect(self.module.buttonPressed_F6)
-        self.module.fOut_list[6].toggled.connect(self.module.buttonPressed_F7)
-        self.module.fOut_list[7].toggled.connect(self.module.buttonPressed_F8)
-        self.module.fOut_list[8].toggled.connect(self.module.buttonPressed_F9)
-
-        self.module.cOut_list[1].toggled.connect(self.module.buttonPressed_C2)
-        self.module.cOut_list[2].toggled.connect(self.module.buttonPressed_C3)
-        self.module.cOut_list[3].toggled.connect(self.module.buttonPressed_C4)
-        self.module.cOut_list[4].toggled.connect(self.module.buttonPressed_C5)
-        self.module.cOut_list[5].toggled.connect(self.module.buttonPressed_C6)
-        self.module.cOut_list[6].toggled.connect(self.module.buttonPressed_C7)
-        self.module.cOut_list[7].toggled.connect(self.module.buttonPressed_C8)
-        self.module.cOut_list[8].toggled.connect(self.module.buttonPressed_C9)
-
-        self.module.dOut_list[1].toggled.connect(self.module.buttonPressed_D2)
-        self.module.dOut_list[2].toggled.connect(self.module.buttonPressed_D3)
-        self.module.dOut_list[3].toggled.connect(self.module.buttonPressed_D4)
-        self.module.dOut_list[4].toggled.connect(self.module.buttonPressed_D5)
-        self.module.dOut_list[5].toggled.connect(self.module.buttonPressed_D6)
-        self.module.dOut_list[6].toggled.connect(self.module.buttonPressed_D7)
-        self.module.dOut_list[7].toggled.connect(self.module.buttonPressed_D8)
-        self.module.dOut_list[8].toggled.connect(self.module.buttonPressed_D9)
         self.AF = self.module.aOut_list[1:-1] + self.module.fOut_list[1:-1]
         self.CD = self.module.cOut_list[1:-1] + self.module.dOut_list[1:-1]
 
+        for btn in chain(
+            self.module.aOut_list,
+            self.module.cOut_list,
+            self.module.dOut_list,
+            self.module.fOut_list,
+        ):
+            btn.setEnabled(False)
 
-        for i in chain(self.module.aOut_list, self.module.cOut_list, self.module.dOut_list, self.module.fOut_list):
-            i.setEnabled(False)
+    def _connect_module_output_signals(self):
+        """Attach relay buttons to their handlers."""
+        mapping = [
+            (self.module.aOut_list, "A"),
+            (self.module.fOut_list, "F"),
+            (self.module.cOut_list, "C"),
+            (self.module.dOut_list, "D"),
+        ]
+        for out_list, prefix in mapping:
+            self._connect_output_list(out_list, prefix)
+
+    def _connect_output_list(self, out_list, prefix):
+        for idx in range(1, len(out_list)):
+            handler = getattr(self.module, f"buttonPressed_{prefix}{idx + 1}", None)
+            if handler:
+                out_list[idx].toggled.connect(handler)
 
     def start_find_module(self):
         self.timer2.setInterval(200)
@@ -252,12 +257,12 @@ class Window(QWidget):
         elif str == 'Inputs':
             self.module.downInp()
 
-    def main(self):
+    def _build_main_layout(self):
         self.main_layout = QVBoxLayout()
         list_of_buttons = self.module.create_buttons()
 
         for buttons_list in list_of_buttons:
-            horizontal_layout =  self.create_layout_with_buttons(buttons_list)
+            horizontal_layout = self.create_layout_with_buttons(buttons_list)
             self.main_layout.addLayout(horizontal_layout)
         
     def create_layout_with_buttons(self, buttons):
@@ -266,25 +271,25 @@ class Window(QWidget):
             layout.addWidget(button)
         return layout
 
-    def menu(self):
-        self.down_board_lb  = QLabel('Нижняя плата')
-        self.upper_board_lb   = QLabel('Верхняя плата')
-        self.port_lb         = QLabel('Порт')
-        self.address_lb      = QLabel('Адрес')
-        self.connect_btn     = QPushButton('Соединение')
-        self.find_btn        = QPushButton('Найти')
-        self.test_btn        = QPushButton('Тестирование')
-        self.upper_board     = QComboBox()
-        self.down_board      = QComboBox()
-        self.port_LineEdit   = QLineEdit('')
+    def _build_menu(self):
+        self.down_board_lb = QLabel('Нижняя плата')
+        self.upper_board_lb = QLabel('Верхняя плата')
+        self.port_lb = QLabel('Порт')
+        self.address_lb = QLabel('Адрес')
+        self.connect_btn = QPushButton('Соединение')
+        self.find_btn = QPushButton('Найти')
+        self.test_btn = QPushButton('Тестирование')
+        self.upper_board = QComboBox()
+        self.down_board = QComboBox()
+        self.port_LineEdit = QLineEdit('')
         self.address_spinBox = QSpinBox()
-        self.connection_quality = QLabel(f'Связь: 0')
+        self.connection_quality = QLabel('Связь: 0')
         self.address_spinBox.setMinimum(1)
         self.address_spinBox.setMaximum(255)
         self.i = self.address_spinBox.minimum()
 
         self.upper_board.addItems(['Inputs', 'Outputs'])
-        self.down_board.addItems (['Inputs', 'Outputs'])
+        self.down_board.addItems(['Inputs', 'Outputs'])
         self.connect_btn.setCheckable(True)
         self.test_btn.setCheckable(True)
 
@@ -302,7 +307,7 @@ class Window(QWidget):
         self.menu_layout.addWidget(self.test_btn)
         self.menu_layout.addWidget(self.connection_quality)
 
-    def initUI(self):
+    def _apply_layout(self):
         self.monitor = QHBoxLayout()
         self.monitor.addLayout(self.menu_layout)
         self.monitor.addLayout(self.main_layout)
