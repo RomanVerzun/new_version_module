@@ -38,12 +38,20 @@ class Module:
     
     def show_inputs(self):
         response = self.connection.get_data()
+        if not response:
+            logger.error("Empty response from module")
+            return
+
         data, checksum = self.dcon.parsedResponse(response)
-        checksumVerificationStatus = self.dcon.checksum_verification(response)
+        if not self.dcon.checksum_verification(response):
+            logger.error("Checksum mismatch in response: %s", response)
+            return
+
         try:
             binary_data = ''.join(format(int(c, 16), '04b') for c in data)
-        except:
-            pass
+        except Exception as exc:
+            logger.error("Failed to parse response %s: %s", response, exc)
+            return
 
         activeInput     = f'color: "black"; background-color: red'
         inactiveInput   = f'color: "black"; background-color: gray'

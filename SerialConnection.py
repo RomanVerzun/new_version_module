@@ -26,13 +26,39 @@ class SerialConnection:
     def open_serial_port(
         self, port: str, baud_rate: int = DEFAULT_BAUD_RATE
     ) -> None:
-        """Configure the serial port."""
+        """Configure the serial port.
+
+        Parameters
+        ----------
+        port:
+            Name of the serial port. If an empty string is provided the
+            configuration is skipped in order to avoid raising an exception in
+            Qt.
+        baud_rate:
+            Communication speed for the port.
+        """
+        if not port:
+            logger.error("Port name is empty")
+            return
         self.serial.setPortName(port)
         self.serial.setBaudRate(baud_rate)
 
-    def connect(self) -> None:
-        """Open the serial port for read/write communication."""
-        self.serial.open(QSerialPort.OpenModeFlag.ReadWrite)
+    def connect(self) -> bool:
+        """Open the serial port for read/write communication.
+
+        Returns
+        -------
+        bool
+            ``True`` if the port was opened successfully, otherwise ``False``.
+        """
+        try:
+            opened = self.serial.open(QSerialPort.OpenModeFlag.ReadWrite)
+            if not opened:
+                logger.error("Failed to open serial port %s", self.serial.portName())
+            return opened
+        except Exception as exc:
+            logger.error("Exception while opening serial port: %s", exc)
+            return False
 
     def stop(self) -> None:
         """Stop communication and release the serial port."""
@@ -67,7 +93,12 @@ class SerialConnection:
 
     def write_data(self) -> None:
         """Send data to the serial port."""
-        self.serial.write(self.dcon.encode())
+        try:
+            self.serial.write(self.dcon.encode())
+        except Exception as exc:
+            logger.error("Failed to write to serial port: %s", exc)
+            return
+
         if self.flag:
             self.request_count += 1
             logger.info("request %s", self.dcon)

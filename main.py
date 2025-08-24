@@ -92,18 +92,39 @@ class Window(QWidget):
 
     def connect_module(self):
         if self.connect_btn.isChecked():
+            port = self.port_LineEdit.text()
+            if not port:
+                QMessageBox.warning(self, "Информация", "Укажите порт")
+                self.connect_btn.setChecked(False)
+                return
+
             self.test_btn.setEnabled(True)
             self.input_status_request = self.module.dcon.create_request(
                 character='-', module_address=self.address_spinBox.value(), command=''
             )
+
             self.module.connection.open_serial_port(
-                port=self.port_LineEdit.text(), baud_rate=115200
+                port=port, baud_rate=115200
             )
-            self.module.connection.connect()
-            self.module.connection.start_automatic_requests(
-                request=self.input_status_request
-            )
-            self.module.connection.serial.readyRead.connect(self.module.show_inputs)
+            if not self.module.connection.connect():
+                QMessageBox.critical(self, "Ошибка", "Не удалось открыть порт")
+                self.connect_btn.setChecked(False)
+                self.test_btn.setEnabled(False)
+                return
+
+            try:
+                self.module.connection.start_automatic_requests(
+                    request=self.input_status_request
+                )
+                self.module.connection.serial.readyRead.connect(self.module.show_inputs)
+            except Exception as exc:
+                logger.exception("Failed to start communication: %s", exc)
+                QMessageBox.critical(self, "Ошибка", "Не удалось настроить соединение")
+                self.module.connection.stop()
+                self.connect_btn.setChecked(False)
+                self.test_btn.setEnabled(False)
+                return
+
             self.timer3.start()
         else:
             self.test_btn.setEnabled(False)
